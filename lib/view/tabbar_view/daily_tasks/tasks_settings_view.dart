@@ -51,9 +51,9 @@ class _TasksSettingsViewState extends State<TasksSettingsView> {
               child: Container(
                 height: 300,
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.cyan[200],
-                  borderRadius: const BorderRadius.only(
+                decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 238, 238, 238),
+                  borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(10),
                     topRight: Radius.circular(10),
                   ),
@@ -432,16 +432,27 @@ class _TasksSettingsViewState extends State<TasksSettingsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme:
+            const IconThemeData(color: Color.fromARGB(255, 238, 238, 238)),
         actions: [
           IconButton(
             onPressed: () {
               showAddTaskForm(context, null);
             },
-            icon: const Icon(Icons.add),
+            icon: const Icon(
+              Icons.add,
+              color: Color.fromARGB(255, 238, 238, 238),
+            ),
           )
         ],
-        backgroundColor: Colors.cyan[200],
-        title: const Text('Daily Tasks Settings'),
+        backgroundColor: const Color.fromARGB(255, 23, 23, 23),
+        title: const Text(
+          'Tasks Settings',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color.fromARGB(255, 238, 238, 238),
+          ),
+        ),
       ),
       body: ListView.builder(
         itemCount: tasksView.length,

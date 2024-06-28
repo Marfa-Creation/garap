@@ -1,18 +1,22 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:garap/riverpod/providers.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:garap/view/tabbar_view/daily_tasks/daily_tasks_view.dart';
 import 'package:garap/view/tabbar_view/daily_tasks/tasks_settings_view.dart';
 import 'package:garap/view/tabbar_view/onetime_tasks_view.dart';
 import 'package:garap/view/tabbar_view/timer_view.dart';
 
-class MainPage extends StatefulWidget {
+class MainPage extends ConsumerStatefulWidget {
   const MainPage({super.key});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  ConsumerState<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage>
+class _MainPageState extends ConsumerState<MainPage>
     with SingleTickerProviderStateMixin {
   ////////////
   //Variable//
@@ -27,13 +31,22 @@ class _MainPageState extends State<MainPage>
   ////////////
   @override
   void initState() {
+    debugging();
     tabController = TabController(length: 3, vsync: this);
     super.initState();
   }
+@override
+void dispose(){
+  taskController.dispose();
+  descriptionController.dispose();
+  super.dispose();
+}
 
   //////////
   //Method//
   //////////
+  Future<void> debugging() async {}
+
   Future<void> addTask(Map<String, dynamic> data) async {
     await tasksBox.add(data);
   }
@@ -63,12 +76,12 @@ class _MainPageState extends State<MainPage>
                 children: [
                   TextField(
                     maxLength: 30,
-                    controller: taskController,
+                    // controller: taskController,
                     decoration: const InputDecoration(label: Text('Task')),
                   ),
-                  TextField(
+                TextField(
                     maxLength: 100,
-                    controller: descriptionController,
+                    // controller: descriptionController,
                     decoration:
                         const InputDecoration(label: Text('Description')),
                   ),
@@ -93,7 +106,6 @@ class _MainPageState extends State<MainPage>
                             taskController.text = '';
                             descriptionController.text = '';
 
-                            // ignore: use_build_context_synchronously
                             Navigator.pop(context);
                           }
                         },
@@ -129,7 +141,19 @@ class _MainPageState extends State<MainPage>
                     onPressed: () async {
                       showAddTaskForm(context);
                     },
-                    icon: const Icon(Icons.add),
+                    icon: const Icon(Icons.add,color: Color.fromARGB(255, 238, 238, 238),),
+                  );
+                } else if (currentIndex == 1) {
+                  return IconButton(
+                    onPressed: () {
+                      ref.watch(audioMode.notifier).state =
+                          !ref.watch(audioMode.notifier).state;
+                      setState(() {});
+                    },
+                    icon: Icon((ref.watch(audioMode.notifier).state)
+                        ? Icons.volume_up
+                        : Icons.volume_off),
+                    color: const Color.fromARGB(255, 238, 238, 238),
                   );
                 } else if (currentIndex == 2) {
                   return IconButton(
@@ -141,7 +165,7 @@ class _MainPageState extends State<MainPage>
                         ),
                       );
                     },
-                    icon: const Icon(Icons.settings),
+                    icon: const Icon(Icons.settings, color: Color.fromARGB(255, 238, 238, 238),),
                   );
                 } else {
                   return const SizedBox();

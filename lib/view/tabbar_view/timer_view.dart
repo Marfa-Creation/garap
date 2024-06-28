@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:garap/riverpod/providers.dart';
 import 'package:intl/intl.dart';
 
 //palet warna
@@ -14,14 +15,15 @@ import 'package:intl/intl.dart';
 //ide
 //isTimerRun hanya di ubah menjadi true ketika tombol play belum pernah di pencet atau setelah reset
 
-class TimerView extends StatefulWidget {
+class TimerView extends ConsumerStatefulWidget {
   const TimerView({super.key});
 
   @override
-  State<TimerView> createState() => _TimerViewState();
+  ConsumerState<TimerView> createState() => _TimerViewState();
 }
 
-class _TimerViewState extends State<TimerView> with TickerProviderStateMixin {
+class _TimerViewState extends ConsumerState<TimerView>
+    with TickerProviderStateMixin {
   ////////////
   //Override//
   ////////////
@@ -56,7 +58,6 @@ class _TimerViewState extends State<TimerView> with TickerProviderStateMixin {
     //dispose controlller
     iconController.dispose();
     visibilityController.dispose();
-    print('disposed running successfully');
     super.dispose();
   }
 
@@ -74,22 +75,19 @@ class _TimerViewState extends State<TimerView> with TickerProviderStateMixin {
   bool isTimerPause = false;
   bool isDispose = false;
   bool isVisible = false;
-  bool isAnimationEnd = false;
+  bool isSoundActive = true;
   //UI/UX
   String status = 'Idle';
   final AudioPlayer timeEndSound = AudioPlayer();
   final AudioPlayer tickSound = AudioPlayer();
   late AnimationController iconController;
   late AnimationController visibilityController;
+  //BLoC
 
   //////////
   //method//
   //////////
-  Future<void> debugging() async {
-    Timer.periodic(Duration(seconds: 1), (timer) {
-      print(isVisible.toString());
-    });
-  }
+  Future<void> debugging() async {}
 
   String setStatus() {
     if (isTimerPause == true) {
@@ -117,7 +115,9 @@ class _TimerViewState extends State<TimerView> with TickerProviderStateMixin {
           isTimerDecrease == false &&
           isTimerRun == true &&
           isTimerPause == false) {
-        tickSound.play(AssetSource('tick_sound.mp3'));
+        if (ref.watch(audioMode.notifier).state) {
+          tickSound.play(AssetSource('tick_sound.mp3'));
+        }
         status = 'Working Time';
 
         setState(() {
@@ -156,7 +156,9 @@ class _TimerViewState extends State<TimerView> with TickerProviderStateMixin {
                 playAlarm(context);
               }
               if (timerSeconds > 0 || timerMinutes > 0 || timerHours > 0) {
-                tickSound.play(AssetSource('tick_sound.mp3'));
+                if (ref.watch(audioMode.notifier).state) {
+                  tickSound.play(AssetSource('tick_sound.mp3'));
+                }
                 timerSeconds--;
               }
               if (timerSeconds < 0) {
@@ -415,7 +417,8 @@ class _TimerViewState extends State<TimerView> with TickerProviderStateMixin {
                                       }
                                     }
                                   : null,
-                              child: const Icon(Icons.arrow_drop_up),
+                              child: const Icon(Icons.arrow_drop_up,
+                                  color: Color.fromARGB(255, 23, 23, 23)),
                             ),
                           )),
                       //Custom button untuk pengurangan nilai
@@ -436,7 +439,10 @@ class _TimerViewState extends State<TimerView> with TickerProviderStateMixin {
                                     }
                                   }
                                 : null,
-                            child: const Icon(Icons.arrow_drop_down),
+                            child: const Icon(
+                              Icons.arrow_drop_down,
+                              color: Color.fromARGB(255, 23, 23, 23),
+                            ),
                           ),
                         ),
                       )
@@ -472,8 +478,8 @@ class _TimerViewState extends State<TimerView> with TickerProviderStateMixin {
                         backgroundColor:
                             const Color.fromARGB(255, 238, 238, 238),
                         onPressed: () {
-                          if (isTimerDecrease == true &&
-                              isTimerIncrease == false) {
+                          if (isTimerIncrease == true &&
+                              isTimerDecrease == false) {
                             setBreakTime();
                           }
                           isTimerIncrease = true;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:garap/view/main_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -10,10 +11,12 @@ void main() async {
   await Hive.openBox('daily_task_list');
   await Hive.openBox('day');
   runApp(
-    const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Garap',
-      home: MyApp(),
+    const ProviderScope(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Garap',
+        home: MyApp(),
+      ),
     ),
   );
 }
