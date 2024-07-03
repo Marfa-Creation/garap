@@ -1,28 +1,29 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:garap/riverpod/providers.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:garap/bloc/timer_cubit.dart';
+import 'package:garap/model/timer_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:garap/view/tabbar_view/daily_tasks/daily_tasks_view.dart';
 import 'package:garap/view/tabbar_view/daily_tasks/tasks_settings_view.dart';
 import 'package:garap/view/tabbar_view/onetime_tasks_view.dart';
 import 'package:garap/view/tabbar_view/timer_view.dart';
 
-class MainPage extends ConsumerStatefulWidget {
+class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
   @override
-  ConsumerState<MainPage> createState() => _MainPageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends ConsumerState<MainPage>
+class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
   ////////////
   //Variable//
   ////////////
   String title = 'One-time tasks';
-  Box<dynamic> tasksBox = Hive.box('one_time_task_list');
+  Box<dynamic> tasksBox = Hive.box('one_time_task_box');
   late TabController tabController;
   TextEditingController taskController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
@@ -35,12 +36,13 @@ class _MainPageState extends ConsumerState<MainPage>
     tabController = TabController(length: 3, vsync: this);
     super.initState();
   }
-@override
-void dispose(){
-  taskController.dispose();
-  descriptionController.dispose();
-  super.dispose();
-}
+
+  @override
+  void dispose() {
+    taskController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
 
   //////////
   //Method//
@@ -76,12 +78,12 @@ void dispose(){
                 children: [
                   TextField(
                     maxLength: 30,
-                    // controller: taskController,
+                    controller: taskController,
                     decoration: const InputDecoration(label: Text('Task')),
                   ),
-                TextField(
+                  TextField(
                     maxLength: 100,
-                    // controller: descriptionController,
+                    controller: descriptionController,
                     decoration:
                         const InputDecoration(label: Text('Description')),
                   ),
@@ -123,6 +125,7 @@ void dispose(){
   //Widget
   @override
   Widget build(BuildContext context) {
+    TimerCubit provider = BlocProvider.of<TimerCubit>(context);
     return DefaultTabController(
       //Mentapkan tab yang secara standar dibuka
       initialIndex: 0,
@@ -141,19 +144,23 @@ void dispose(){
                     onPressed: () async {
                       showAddTaskForm(context);
                     },
-                    icon: const Icon(Icons.add,color: Color.fromARGB(255, 238, 238, 238),),
+                    icon: const Icon(
+                      Icons.add,
+                      color: Color.fromARGB(255, 238, 238, 238),
+                    ),
                   );
                 } else if (currentIndex == 1) {
-                  return IconButton(
-                    onPressed: () {
-                      ref.watch(audioMode.notifier).state =
-                          !ref.watch(audioMode.notifier).state;
-                      setState(() {});
-                    },
-                    icon: Icon((ref.watch(audioMode.notifier).state)
-                        ? Icons.volume_up
-                        : Icons.volume_off),
-                    color: const Color.fromARGB(255, 238, 238, 238),
+                  return BlocBuilder<TimerCubit, TimerModel>(
+                    bloc: provider,
+                    builder: (context, state) => IconButton(
+                      onPressed: () {
+                        provider.audioMode = !provider.audioMode;
+                      },
+                      icon: Icon((state.audioMode == true)
+                          ? Icons.volume_up
+                          : Icons.volume_off),
+                      color: const Color.fromARGB(255, 238, 238, 238),
+                    ),
                   );
                 } else if (currentIndex == 2) {
                   return IconButton(
@@ -165,7 +172,10 @@ void dispose(){
                         ),
                       );
                     },
-                    icon: const Icon(Icons.settings, color: Color.fromARGB(255, 238, 238, 238),),
+                    icon: const Icon(
+                      Icons.settings,
+                      color: Color.fromARGB(255, 238, 238, 238),
+                    ),
                   );
                 } else {
                   return const SizedBox();

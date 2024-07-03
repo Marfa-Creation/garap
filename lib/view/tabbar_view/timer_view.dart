@@ -1,10 +1,8 @@
-import 'dart:async';
-
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:garap/riverpod/providers.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:garap/bloc/timer_cubit.dart';
+import 'package:garap/model/timer_model.dart';
 import 'package:intl/intl.dart';
 
 //palet warna
@@ -12,30 +10,25 @@ import 'package:intl/intl.dart';
 //hitam: Color.fromARGB(255, 23, 23, 23)
 //abuAbu: Color.fromARGB(255, 68, 68, 68)
 
-//ide
-//isTimerRun hanya di ubah menjadi true ketika tombol play belum pernah di pencet atau setelah reset
-
-class TimerView extends ConsumerStatefulWidget {
+class TimerView extends StatefulWidget {
   const TimerView({super.key});
 
   @override
-  ConsumerState<TimerView> createState() => _TimerViewState();
+  State<TimerView> createState() => _TimerViewState();
 }
 
-class _TimerViewState extends ConsumerState<TimerView>
+class _TimerViewState extends State<TimerView>
     with TickerProviderStateMixin {
   ////////////
   //Override//
   ////////////
+
   @override
   initState() {
-    // debugging();
-    increaseTime();
-    decreaseTime();
-    timeEndSound.setReleaseMode(ReleaseMode.loop);
-    timeEndSound.setVolume(1);
-    tickSound.setReleaseMode(ReleaseMode.release);
-    tickSound.setVolume(1);
+    TimerCubit provider = BlocProvider.of<TimerCubit>(context);
+    provider.isDispose = false;
+    provider.increaseTime();
+    provider.decreaseTime(context);
     iconController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
@@ -46,15 +39,16 @@ class _TimerViewState extends ConsumerState<TimerView>
 
   @override
   void dispose() {
-    isTimerRun = false;
-    isTimerIncrease = false;
-    isTimerDecrease = false;
-    isTimerPause = false;
-    status = 'Idle';
-    timerSeconds = 0;
-    timerMinutes = 0;
-    timerHours = 0;
-    isDispose = true;
+    provider.isTimerRun = false;
+    provider.isTimerIncrease = false;
+    provider.isTimerDecrease = false;
+    provider.isTimerPause = false;
+    provider.status = 'Idle';
+    provider.timerSeconds = 0;
+    provider.timerMinutes = 0;
+    provider.timerHours = 0;
+    provider.isDispose = true;
+
     //dispose controlller
     iconController.dispose();
     visibilityController.dispose();
@@ -64,192 +58,20 @@ class _TimerViewState extends ConsumerState<TimerView>
   ////////////
   //Variable//
   ////////////
-  NumberFormat formatter = NumberFormat('00');
-  int timerSeconds = 0;
-  int timerMinutes = 0;
-  int timerHours = 0;
-  int input = 1;
-  bool isTimerIncrease = false;
-  bool isTimerDecrease = false;
-  bool isTimerRun = false;
-  bool isTimerPause = false;
-  bool isDispose = false;
-  bool isVisible = false;
-  bool isSoundActive = true;
+  late TimerCubit provider;
   //UI/UX
-  String status = 'Idle';
-  final AudioPlayer timeEndSound = AudioPlayer();
-  final AudioPlayer tickSound = AudioPlayer();
+  bool isVisible = false;
   late AnimationController iconController;
   late AnimationController visibilityController;
-  //BLoC
 
   //////////
   //method//
   //////////
-  Future<void> debugging() async {}
-
-  String setStatus() {
-    if (isTimerPause == true) {
-      return 'Paused';
-    } else if ((isTimerIncrease == true || isTimerDecrease == false) &&
-        isTimerRun == true) {
-      return 'Working Time';
-    } else if ((isTimerIncrease == false || isTimerDecrease == true) &&
-        isTimerRun == true) {
-      return 'Breaking Time';
-    } else {
-      return 'Idle';
-    }
-  }
-
-  //Method untuk menjalankan timer
-  void increaseTime() {
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      //cancel timer
-      if (isDispose == true) {
-        timer.cancel();
-      }
-      //increase timer
-      if (isTimerIncrease == true &&
-          isTimerDecrease == false &&
-          isTimerRun == true &&
-          isTimerPause == false) {
-        if (ref.watch(audioMode.notifier).state) {
-          tickSound.play(AssetSource('tick_sound.mp3'));
-        }
-        status = 'Working Time';
-
-        setState(() {
-          timerSeconds++;
-          if (timerSeconds == 60) {
-            timerSeconds = 0;
-            timerMinutes++;
-          }
-          if (timerMinutes == 60) {
-            timerMinutes = 0;
-            timerHours++;
-          }
-        });
-      }
-    });
-  }
-
-  void decreaseTime() {
-    Timer.periodic(
-      const Duration(seconds: 1),
-      (timer) async {
-        //cancel timer
-        if (isDispose == true) {
-          timer.cancel();
-        }
-
-        //decrease timer
-        if (isTimerIncrease == false &&
-            isTimerDecrease == true &&
-            isTimerRun == true &&
-            isTimerPause == false) {
-          status = 'Breaking Time';
-          setState(
-            () {
-              if (timerHours == 0 && timerMinutes == 0 && timerSeconds == 0) {
-                playAlarm(context);
-              }
-              if (timerSeconds > 0 || timerMinutes > 0 || timerHours > 0) {
-                if (ref.watch(audioMode.notifier).state) {
-                  tickSound.play(AssetSource('tick_sound.mp3'));
-                }
-                timerSeconds--;
-              }
-              if (timerSeconds < 0) {
-                timerSeconds = 59;
-                timerMinutes--;
-              }
-              if (timerMinutes < 0) {
-                timerMinutes = 59;
-                timerHours--;
-              }
-            },
-          );
-        }
-      },
-    );
-  }
-
-  //Method untuk menentukan panjang waktu istirahat
-  void setBreakTime() {
-    double hours = timerHours.toDouble();
-    double minutes = timerMinutes.toDouble();
-    double seconds = timerSeconds.toDouble();
-
-    minutes += hours * 60;
-    seconds += minutes * 60;
-
-    seconds /= input;
-
-    minutes = seconds / 60;
-    hours = minutes / 60;
-
-    setState(() {
-      timerSeconds = (seconds % 60).toInt();
-      timerMinutes = minutes.toInt();
-      timerHours = hours.toInt();
-    });
-  }
-
-  //Method untuk mengurangi waktu istirahat
-
-  //Method untuk memutar alarm
-  void playAlarm(BuildContext context) {
-    if (isTimerRun == true &&
-        (isTimerIncrease == false || isTimerDecrease == true) &&
-        (timerSeconds == 0 && timerMinutes == 0 && timerHours == 0)) {
-      timeEndSound.play(AssetSource('digital_alarm.mp3'));
-      isTimerPause = true;
-      iconController.forward();
-      showModalBottomSheet(
-        backgroundColor: Colors.transparent,
-        context: context,
-        builder: (context) {
-          return Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: BoxDecoration(
-                color: Colors.grey[350],
-                border: Border.all(color: Colors.black, width: 0.5)),
-            child: Material(
-              child: InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: const Center(
-                  child: Text(
-                    'Break Time is Over',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ).whenComplete(
-        () {
-          isTimerPause = false;
-          timeEndSound.stop();
-          isTimerIncrease = true;
-          isTimerDecrease = false;
-        },
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    provider = BlocProvider.of<TimerCubit>(context);
     return Scaffold(
-      // floatingActionButton: FloatingActionButton,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -258,7 +80,7 @@ class _TimerViewState extends ConsumerState<TimerView>
             Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: Text(
-                setStatus(),
+                provider.setStatus(),
                 style: const TextStyle(
                     color: Color.fromARGB(255, 238, 238, 238),
                     fontSize: 25,
@@ -269,7 +91,7 @@ class _TimerViewState extends ConsumerState<TimerView>
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //Tampilan detik
+                //Tampilan jam
                 Container(
                   width: 65,
                   height: 65,
@@ -279,11 +101,15 @@ class _TimerViewState extends ConsumerState<TimerView>
                     color: const Color.fromARGB(255, 23, 23, 23),
                   ),
                   child: Center(
-                    child: Text(formatter.format(timerHours),
-                        style: const TextStyle(
-                            color: Color.fromARGB(255, 238, 238, 238),
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold)),
+                    child: BlocBuilder<TimerCubit, TimerModel>(
+                      bloc: provider,
+                      builder: (context, state) => Text(
+                          NumberFormat('00').format(state.timerHours),
+                          style: const TextStyle(
+                              color: Color.fromARGB(255, 238, 238, 238),
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold)),
+                    ),
                   ),
                 ),
                 //Tampilan menit
@@ -296,14 +122,18 @@ class _TimerViewState extends ConsumerState<TimerView>
                     color: const Color.fromARGB(255, 23, 23, 23),
                   ),
                   child: Center(
-                    child: Text(formatter.format(timerMinutes),
-                        style: const TextStyle(
-                            color: Color.fromARGB(255, 238, 238, 238),
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold)),
+                    child: BlocBuilder<TimerCubit, TimerModel>(
+                      bloc: provider,
+                      builder: (context, state) => Text(
+                          NumberFormat('00').format(state.timerMinutes),
+                          style: const TextStyle(
+                              color: Color.fromARGB(255, 238, 238, 238),
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold)),
+                    ),
                   ),
                 ),
-                //Tampilan jam
+                //Tampilan detik
                 Container(
                   width: 65,
                   height: 65,
@@ -313,15 +143,23 @@ class _TimerViewState extends ConsumerState<TimerView>
                     color: const Color.fromARGB(255, 23, 23, 23),
                   ),
                   child: Center(
-                    child: Text(
-                      formatter.format(timerSeconds),
-                      style: const TextStyle(
-                          color: Color.fromARGB(255, 238, 238, 238),
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold),
+                    child: BlocBuilder<TimerCubit, TimerModel>(
+                      bloc: provider,
+                      builder: (context, state) => Text(
+                        NumberFormat('00').format(state.timerSeconds),
+                        style: const TextStyle(
+                            color: Color.fromARGB(255, 238, 238, 238),
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ),
+                // IconButton(
+                //     onPressed: () {
+                //       setState(() {});
+                //     },
+                //     icon: const Icon(Icons.android))
               ],
             ),
             Padding(
@@ -379,7 +217,7 @@ class _TimerViewState extends ConsumerState<TimerView>
                       color: Color.fromARGB(255, 238, 238, 238),
                     ),
                   ),
-                  //Menunjukkan waktu istirahat yang di tentukan user
+                  //Menunjukkan breakRatio
                   Container(
                     width: 40,
                     height: 40,
@@ -388,17 +226,20 @@ class _TimerViewState extends ConsumerState<TimerView>
                       color: const Color.fromARGB(255, 23, 23, 23),
                     ),
                     child: Center(
-                      child: Text(
-                        input.toString(),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 238, 238, 238),
+                      child: BlocBuilder<TimerCubit, TimerModel>(
+                        bloc: provider,
+                        builder: (context, state) => Text(
+                          state.breakRatio.toString(),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 238, 238, 238),
+                          ),
                         ),
                       ),
                     ),
                   ),
                   Column(
-                    //Custom Button untuk penambahan nilai
+                    //Custom Button untuk menambah breakRatio
                     children: [
                       Container(
                           width: 30,
@@ -408,20 +249,22 @@ class _TimerViewState extends ConsumerState<TimerView>
                               border:
                                   Border.all(color: Colors.black, width: 0.5)),
                           child: Material(
-                            child: InkWell(
-                              onTap: (input < 10)
-                                  ? () {
-                                      if (input < 10) {
-                                        input++;
-                                        setState(() {});
+                            child: BlocBuilder<TimerCubit, TimerModel>(
+                              bloc: provider,
+                              builder: (context, state) => InkWell(
+                                onTap: (state.breakRatio < 10)
+                                    ? () {
+                                        if (state.breakRatio < 10) {
+                                          provider.breakRatio++;
+                                        }
                                       }
-                                    }
-                                  : null,
-                              child: const Icon(Icons.arrow_drop_up,
-                                  color: Color.fromARGB(255, 23, 23, 23)),
+                                    : null,
+                                child: const Icon(Icons.arrow_drop_up,
+                                    color: Color.fromARGB(255, 23, 23, 23)),
+                              ),
                             ),
                           )),
-                      //Custom button untuk pengurangan nilai
+                      //Custom button untuk mengurangi breakRatio
                       Container(
                         width: 30,
                         height: 20,
@@ -430,18 +273,20 @@ class _TimerViewState extends ConsumerState<TimerView>
                             border:
                                 Border.all(color: Colors.black, width: 0.5)),
                         child: Material(
-                          child: InkWell(
-                            onTap: (input > 1)
-                                ? () {
-                                    if (input > 1) {
-                                      input--;
-                                      setState(() {});
+                          child: BlocBuilder<TimerCubit, TimerModel>(
+                            bloc: provider,
+                            builder: (context, state) => InkWell(
+                              onTap: (state.breakRatio > 1)
+                                  ? () {
+                                      if (state.breakRatio > 1) {
+                                        provider.breakRatio--;
+                                      }
                                     }
-                                  }
-                                : null,
-                            child: const Icon(
-                              Icons.arrow_drop_down,
-                              color: Color.fromARGB(255, 23, 23, 23),
+                                  : null,
+                              child: const Icon(
+                                Icons.arrow_drop_down,
+                                color: Color.fromARGB(255, 23, 23, 23),
+                              ),
                             ),
                           ),
                         ),
@@ -474,26 +319,29 @@ class _TimerViewState extends ConsumerState<TimerView>
                           duration: Duration(milliseconds: 300),
                         )
                       ],
-                      child: FloatingActionButton(
-                        backgroundColor:
-                            const Color.fromARGB(255, 238, 238, 238),
-                        onPressed: () {
-                          if (isTimerIncrease == true &&
-                              isTimerDecrease == false) {
-                            setBreakTime();
-                          }
-                          isTimerIncrease = true;
-                          isTimerDecrease = false;
-                          isTimerPause = false;
-                          isTimerDecrease = true;
-                          isTimerIncrease = false;
-                          setState(() {
-                            iconController.forward();
-                          });
-                        },
-                        child: const Icon(
-                          Icons.free_breakfast,
-                          color: Color.fromARGB(255, 23, 23, 23),
+                      child: BlocBuilder<TimerCubit, TimerModel>(
+                        bloc: provider,
+                        builder: (context, state) => FloatingActionButton(
+                          backgroundColor:
+                              const Color.fromARGB(255, 238, 238, 238),
+                          onPressed: () {
+                            if (state.isTimerIncrease == true &&
+                                state.isTimerDecrease == false) {
+                              provider.setBreakTime();
+                            }
+                            provider.isTimerIncrease = true;
+                            provider.isTimerDecrease = false;
+                            provider.isTimerPause = false;
+                            provider.isTimerDecrease = true;
+                            provider.isTimerIncrease = false;
+                            setState(() {
+                              iconController.forward();
+                            });
+                          },
+                          child: const Icon(
+                            Icons.free_breakfast,
+                            color: Color.fromARGB(255, 23, 23, 23),
+                          ),
                         ),
                       ),
                     ),
@@ -502,69 +350,73 @@ class _TimerViewState extends ConsumerState<TimerView>
                   //switch play/pause timer
                   Padding(
                     padding: const EdgeInsets.only(left: 15, right: 15),
-                    child: FloatingActionButton(
-                      backgroundColor: const Color.fromARGB(255, 238, 238, 238),
-                      onPressed: () {
-                        setState(() {
-                          isVisible = true;
-                        });
-                        //jika timer pertama kali di mulai atau selesai di reset
-                        if (isTimerRun == false) {
-                          isTimerRun = true;
-                          isTimerIncrease = true;
-                          isTimerDecrease = false;
-                          isTimerPause = false;
-                          setState(
-                            () {
+                    child: BlocBuilder<TimerCubit, TimerModel>(
+                      builder: (context, state) => FloatingActionButton(
+                        backgroundColor:
+                            const Color.fromARGB(255, 238, 238, 238),
+                        onPressed: () {
+                          setState(() {
+                            isVisible = true;
+                          });
+                          //jika timer pertama kali di mulai atau selesai di reset
+                          if (state.isTimerRun == false) {
+                            provider.isTimerRun = true;
+                            provider.isTimerIncrease = true;
+                            provider.isTimerDecrease = false;
+                            provider.isTimerPause = false;
+                            setState(
+                              () {
+                                iconController.forward();
+                              },
+                            );
+                            //jika timer sedang mengurangi angka dan kondisi tidak di pause
+                          } else if (state.isTimerRun == true &&
+                              (state.isTimerIncrease == false &&
+                                  state.isTimerDecrease == true) &&
+                              state.isTimerPause == false) {
+                            provider.isTimerPause = true;
+                            setState(
+                              () {
+                                iconController.reverse();
+                              },
+                            );
+                            //jika timer sedang menambah angka dan kondisi tidak di pause
+                          } else if (state.isTimerRun == true &&
+                              (state.isTimerIncrease == true &&
+                                  state.isTimerDecrease == false) &&
+                              state.isTimerPause == false) {
+                            provider.isTimerPause = true;
+                            setState(
+                              () {
+                                iconController.reverse();
+                              },
+                            );
+                            //jika timer sedang mengurangi angka dan kondisi sedang di pause
+                          } else if (state.isTimerRun == true &&
+                              (state.isTimerIncrease == false &&
+                                  state.isTimerDecrease == true) &&
+                              state.isTimerPause == true) {
+                            provider.isTimerPause = false;
+                            setState(() {
                               iconController.forward();
-                            },
-                          );
-                          //jika timer sedang mengurangi angka dan kondisi tidak di pause
-                        } else if (isTimerRun == true &&
-                            (isTimerIncrease == false &&
-                                isTimerDecrease == true) &&
-                            isTimerPause == false) {
-                          isTimerPause = true;
-                          setState(
-                            () {
-                              iconController.reverse();
-                            },
-                          );
-                          //jika timer sedang menambah angka dan kondisi tidak di pause
-                        } else if (isTimerRun == true &&
-                            (isTimerIncrease == true &&
-                                isTimerDecrease == false) &&
-                            isTimerPause == false) {
-                          isTimerPause = true;
-                          setState(
-                            () {
-                              iconController.reverse();
-                            },
-                          );
-                          //jika timer sedang mengurangi angka dan kondisi sedang di pause
-                        } else if (isTimerRun == true &&
-                            (isTimerIncrease == false &&
-                                isTimerDecrease == true) &&
-                            isTimerPause == true) {
-                          isTimerPause = false;
-                          setState(() {
-                            iconController.forward();
-                          });
-                          //jika timer sedang menambah angka dan kondisi sedang di pause
-                        } else if (isTimerRun == true &&
-                            (isTimerIncrease == true &&
-                                isTimerDecrease == false) &&
-                            isTimerPause == true) {
-                          isTimerPause = false;
-                          setState(() {
-                            iconController.forward();
-                          });
-                        }
-                      },
-                      child: AnimatedIcon(
-                          color: const Color.fromARGB(255, 23, 23, 23),
-                          icon: AnimatedIcons.play_pause,
-                          progress: iconController),
+                            });
+                            //jika timer sedang menambah angka dan kondisi sedang di pause
+                          } else if (state.isTimerRun == true &&
+                              (state.isTimerIncrease == true &&
+                                  state.isTimerDecrease == false) &&
+                              state.isTimerPause == true) {
+                            provider.isTimerPause = false;
+                            setState(() {
+                              iconController.forward();
+                            });
+                          } else {
+                          }
+                        },
+                        child: AnimatedIcon(
+                            color: const Color.fromARGB(255, 23, 23, 23),
+                            icon: AnimatedIcons.play_pause,
+                            progress: iconController),
+                      ),
                     ),
                   ),
 
@@ -585,35 +437,37 @@ class _TimerViewState extends ConsumerState<TimerView>
                           duration: Duration(milliseconds: 300),
                         ),
                       ],
-                      child: FloatingActionButton(
-                        backgroundColor:
-                            const Color.fromARGB(255, 238, 238, 238),
-                        onPressed: () {
-                          isTimerRun = false;
-                          isTimerIncrease = false;
-                          isTimerDecrease = false;
-                          isTimerPause = false;
-                          status = 'Idle';
-                          timerSeconds = 0;
-                          timerMinutes = 0;
-                          timerHours = 0;
-                          setState(
-                            () {
-                              iconController.reverse();
-
-                              visibilityController.reverse().whenComplete(
-                                    () => setState(
-                                      () {
-                                        isVisible = false;
-                                      },
-                                    ),
-                                  );
-                            },
-                          );
-                        },
-                        child: const Icon(
-                          Icons.stop,
-                          color: Color.fromARGB(255, 23, 23, 23),
+                      child: BlocBuilder<TimerCubit, TimerModel>(
+                        bloc: provider,
+                        builder: (context, state) => FloatingActionButton(
+                          backgroundColor:
+                              const Color.fromARGB(255, 238, 238, 238),
+                          onPressed: () {
+                            provider.isTimerRun = false;
+                            provider.isTimerIncrease = false;
+                            provider.isTimerDecrease = false;
+                            provider.isTimerPause = false;
+                            provider.status = 'Idle';
+                            provider.timerSeconds = 0;
+                            provider.timerMinutes = 0;
+                            provider.timerHours = 0;
+                            setState(
+                              () {
+                                iconController.reverse();
+                                visibilityController.reverse().whenComplete(
+                                      () => setState(
+                                        () {
+                                          isVisible = false;
+                                        },
+                                      ),
+                                    );
+                              },
+                            );
+                          },
+                          child: const Icon(
+                            Icons.stop,
+                            color: Color.fromARGB(255, 23, 23, 23),
+                          ),
                         ),
                       ),
                     ),

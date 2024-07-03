@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:garap/bloc/onetime_tasks_cubit.dart';
+import 'package:garap/bloc/timer_cubit.dart';
 import 'package:garap/view/main_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -7,16 +9,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //Hive
   await Hive.initFlutter();
-  await Hive.openBox('one_time_task_list');
-  await Hive.openBox('daily_task_list');
-  await Hive.openBox('day');
+  await Hive.openBox('one_time_task_box');
+  await Hive.openBox('daily_task_box');
+  await Hive.openBox('day_box');
   runApp(
-    const ProviderScope(
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Garap',
-        home: MyApp(),
-      ),
+    const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Garap',
+      home: MyApp(),
     ),
   );
 }
@@ -31,13 +31,21 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        scaffoldBackgroundColor: const Color.fromARGB(255, 68, 68, 68),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => TimerCubit(),
+        ),
+        BlocProvider(create: (context) => OnetimeTasksCubit()),
+      ],
+      child: MaterialApp(
+        theme: ThemeData(
+          scaffoldBackgroundColor: const Color.fromARGB(255, 68, 68, 68),
+        ),
+        debugShowCheckedModeBanner: false,
+        title: 'Garap',
+        home: const MainPage(),
       ),
-      debugShowCheckedModeBanner: false,
-      title: 'Garap',
-      home: const MainPage(),
     );
   }
 }

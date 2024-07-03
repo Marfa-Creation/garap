@@ -25,9 +25,7 @@ class _DailyTasksViewState extends State<DailyTasksView> {
   initState() {
     checkDay();
     if (day != dbDay.get('day') && tasksBox.length > 0) {
-      print('reset status');
       for (var i = 0; i < tasksBox.length; i++) {
-        print('loop ke $i');
         tasksBox.putAt(i, {
           'status': false,
           'task': tasksBox.getAt(i)['task'],
@@ -44,7 +42,6 @@ class _DailyTasksViewState extends State<DailyTasksView> {
     }
     tasksBox.watch().listen(
       (event) {
-        print('database changed');
         refreshTasksView();
       },
     );
@@ -60,7 +57,6 @@ class _DailyTasksViewState extends State<DailyTasksView> {
 
   void debugging() {
     Timer.periodic(const Duration(milliseconds: 1000), (timer) {
-      print(tasksBox.length);
     });
   }
 
