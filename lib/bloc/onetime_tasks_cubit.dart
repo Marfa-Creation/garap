@@ -7,8 +7,6 @@ class OnetimeTasksCubit extends Cubit<OnetimeTasksModel> {
   OnetimeTasksCubit()
       : super(
           OnetimeTasksModel(
-            taskController: TextEditingController(),
-            descriptionController: TextEditingController(),
             tasksView: const [],
           ),
         );
@@ -16,26 +14,16 @@ class OnetimeTasksCubit extends Cubit<OnetimeTasksModel> {
   //////////
   //setter//
   //////////
-  set taskController(String value) {
-    state.taskController.text = value;
-    emit(
-      OnetimeTasksModel(
-        tasksView: state.tasksView,
-        taskController: state.taskController,
-        descriptionController: state.descriptionController,
-      ),
-    );
-  }
-
-  set descriptionController(TextEditingController value) {
-    emit(
-      OnetimeTasksModel(
-        tasksView: state.tasksView,
-        taskController: state.taskController,
-        descriptionController: value,
-      ),
-    );
-  }
+  // set taskController(String value) {
+  //   state.taskController.text = value;
+  //   emit(
+  //     OnetimeTasksModel(
+  //       tasksView: state.tasksView,
+  //       taskController: state.taskController,
+  //       descriptionController: state.descriptionController,
+  //     ),
+  //   );
+  // }
 
   //////////
   //getter//
@@ -61,17 +49,15 @@ class OnetimeTasksCubit extends Cubit<OnetimeTasksModel> {
     emit(
       OnetimeTasksModel(
         tasksView: data.reversed.toList(),
-        taskController: TextEditingController(),
-        descriptionController: TextEditingController(),
       ),
     );
   }
 
-  Future<void> addTask(Map<String, dynamic> data) async {
+  Future<void> _addTask(Map<String, dynamic> data) async {
     await state.tasksBox.add(data);
   }
 
-  Future<void> editTask(int? itemKey, Map<String, dynamic> data) async {
+  Future<void> _editTask(int itemKey, Map<String, dynamic> data) async {
     await state.tasksBox.put(itemKey, data);
   }
 
@@ -79,7 +65,13 @@ class OnetimeTasksCubit extends Cubit<OnetimeTasksModel> {
     await state.tasksBox.delete(itemKey);
   }
 
-  void showTaskForm(BuildContext context, int? itemKey) {
+  void showEditTaskForm(
+      int itemKey, BuildContext context, String taskName, String description) {
+    TextEditingController taskController =
+        TextEditingController(text: taskName);
+    TextEditingController descriptionController =
+        TextEditingController(text: description);
+
     if (context.mounted) {
       showModalBottomSheet(
         backgroundColor: Colors.transparent,
@@ -104,12 +96,12 @@ class OnetimeTasksCubit extends Cubit<OnetimeTasksModel> {
                 children: [
                   TextField(
                     maxLength: 30,
-                    controller: state.taskController,
+                    controller: taskController,
                     decoration: const InputDecoration(label: Text('Task')),
                   ),
                   TextField(
                     maxLength: 100,
-                    controller: state.descriptionController,
+                    controller: descriptionController,
                     decoration:
                         const InputDecoration(label: Text('Description')),
                   ),
@@ -123,30 +115,91 @@ class OnetimeTasksCubit extends Cubit<OnetimeTasksModel> {
                           ),
                         ),
                         onPressed: () async {
-                          if (state.taskController.text.isNotEmpty) {
-                            if (itemKey != null) {
+                          if (taskController.text.isNotEmpty) {
+                            await _editTask(itemKey, {
+                              'task': taskController.text,
+                              'description': descriptionController.text,
+                            });
 
-                              // emit(OnetimeTasksModel(tasksView: state.tasksView, taskController: taskController, descriptionController: descriptionController))
-                              await editTask(itemKey, {
-                                'task': state.taskController.text,
-                                'description': state.descriptionController.text
-                              });
-                            } else {
-                              await addTask({
-                                'task': state.taskController.text,
-                                'description': state.descriptionController.text,
-                              });
-                            }
-
-                            state.taskController.text = '';
-                            state.descriptionController.text = '';
                             refreshTaskView();
-
-                            // ignore: use_build_context_synchronously
-                            Navigator.pop(context);
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
                           }
                         },
-                        child: Text((itemKey != null) ? 'Edit' : 'Add')),
+                        child: const Text('Edit')),
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  void showAddTaskForm(BuildContext context) {
+    TextEditingController taskController = TextEditingController();
+    TextEditingController descriptionController = TextEditingController();
+
+    if (context.mounted) {
+      showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        context: context,
+        builder: (context) {
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Container(
+              height: 250,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.cyan[200],
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  TextField(
+                    maxLength: 30,
+                    controller: taskController,
+                    decoration: const InputDecoration(label: Text('Task')),
+                  ),
+                  TextField(
+                    maxLength: 100,
+                    controller: descriptionController,
+                    decoration:
+                        const InputDecoration(label: Text('Description')),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 7),
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.cyan[700],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                        ),
+                        onPressed: () async {
+                          if (taskController.text.isNotEmpty) {
+                            await _addTask({
+                              'task': taskController.text,
+                              'description': descriptionController.text,
+                            });
+
+                            // state.taskController.text = '';
+                            // state.descriptionController.text = '';
+                            refreshTaskView();
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
+                          }
+                        },
+                        child: const Text('Add')),
                   )
                 ],
               ),

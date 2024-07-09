@@ -1,14 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:garap/bloc/timer_cubit.dart';
-import 'package:garap/model/timer_model.dart';
+import 'package:garap/view/daily_tasks/daily_tasks_view.dart';
+import 'package:garap/view/onetime_tasks_view.dart';
+import 'package:garap/view/restwork_timer_view.dart';
+import 'package:garap/widgets/menu_card_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:garap/view/tabbar_view/daily_tasks/daily_tasks_view.dart';
-import 'package:garap/view/tabbar_view/daily_tasks/tasks_settings_view.dart';
-import 'package:garap/view/tabbar_view/onetime_tasks_view.dart';
-import 'package:garap/view/tabbar_view/timer_view.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -122,143 +119,121 @@ class _MainPageState extends State<MainPage>
     }
   }
 
+  List<String> tabs = const [
+    'Menu',
+    'Daily Tasks',
+    'Onetime Tasks',
+  ];
+  int current = 0;
+  final ScrollController controller = ScrollController();
+
   //Widget
   @override
   Widget build(BuildContext context) {
-    TimerCubit provider = BlocProvider.of<TimerCubit>(context);
-    return DefaultTabController(
-      //Mentapkan tab yang secara standar dibuka
-      initialIndex: 0,
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 23, 23, 23),
-          actions: [
-            ListenableBuilder(
-              listenable: tabController,
-              builder: (context, child) {
-                final currentIndex = tabController.index;
-
-                if (currentIndex == 0) {
-                  return IconButton(
-                    onPressed: () async {
-                      showAddTaskForm(context);
-                    },
-                    icon: const Icon(
-                      Icons.add,
-                      color: Color.fromARGB(255, 238, 238, 238),
-                    ),
-                  );
-                } else if (currentIndex == 1) {
-                  return BlocBuilder<TimerCubit, TimerModel>(
-                    bloc: provider,
-                    builder: (context, state) => IconButton(
-                      onPressed: () {
-                        provider.audioMode = !provider.audioMode;
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 23, 23, 23),
+        title: const Text('Garap',
+            style: TextStyle(color: Color.fromARGB(255, 238, 238, 238))),
+      ),
+      body: RawScrollbar(
+        thumbVisibility: false,
+        thumbColor: const Color.fromARGB(255, 23, 23, 23),
+        controller: controller,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: ScrollConfiguration(
+              behavior: const ScrollBehavior().copyWith(scrollbars: false),
+              child: ListView(controller: controller, children: [
+                Row(
+                  children: [
+                    //MenuCardWidget untuk menuju ke `DailyTasksView`
+                    MenuCardWidget(
+                      color: Colors.red,
+                      text: const Text(
+                        'Daily Tasks',
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
+                      icon: const Icon(
+                        Icons.event_available,
+                        size: 100,
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const DailyTasksView()));
                       },
-                      icon: Icon((state.audioMode == true)
-                          ? Icons.volume_up
-                          : Icons.volume_off),
-                      color: const Color.fromARGB(255, 238, 238, 238),
                     ),
-                  );
-                } else if (currentIndex == 2) {
-                  return IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const TasksSettingsView(),
-                        ),
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.settings,
-                      color: Color.fromARGB(255, 238, 238, 238),
+                    const SizedBox(width: 20),
+                    //MenuCardWidget untuk menuju ke `OnetimeTasksView`
+                    MenuCardWidget(
+                      color: Colors.red,
+                      text: const Text(
+                        'Onetime Tasks',
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
+                      icon: const Icon(
+                        Icons.event,
+                        size: 100,
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const OneTimeTasksView()));
+                      },
                     ),
-                  );
-                } else {
-                  return const SizedBox();
-                }
-              },
-            )
-          ],
-          title: ListenableBuilder(
-            listenable: tabController,
-            builder: (context, _) {
-              final currentIndex = tabController.index;
-
-              if (currentIndex == 0) {
-                return const Text(
-                  'OneTime Tasks',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 238, 238, 238),
-                  ),
-                );
-              } else if (currentIndex == 1) {
-                return const Text(
-                  'RestWork Timer',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 238, 238, 238),
-                  ),
-                );
-              } else {
-                return const Text(
-                  'Daily Tasks',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 238, 238, 238),
-                  ),
-                );
-              }
-            },
-          ),
-          bottom: PreferredSize(
-            preferredSize: const Size(double.infinity, 50),
-            child: TabBar(
-              tabAlignment: TabAlignment.start,
-              indicator: const BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(8),
-                  topRight: Radius.circular(8),
+                  ],
                 ),
-                color: Color.fromARGB(255, 68, 68, 68),
-              ),
-              indicatorSize: TabBarIndicatorSize.tab,
-              controller: tabController,
-              isScrollable: true,
-              tabs: const [
-                Tab(
-                  child: Icon(
-                    Icons.one_x_mobiledata,
-                    color: Color.fromARGB(255, 238, 238, 238),
-                  ),
+                const SizedBox(height: 30),
+                Row(
+                  children: [
+                    //MenuCardWidget untuk menuju ke`TimerView`
+                    MenuCardWidget(
+                      color: Colors.green,
+                      text: const Text(
+                        'Restwork Timer',
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
+                      icon: const Icon(
+                        Icons.timer,
+                        size: 100,
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const RestworkTimerView()));
+                      },
+                    ),
+                    const SizedBox(width: 20),
+                    const MenuCardWidget(),
+                  ],
                 ),
-                Tab(
-                  child: Icon(
-                    Icons.timer_outlined,
-                    color: Color.fromARGB(255, 238, 238, 238),
-                  ),
+                const SizedBox(height: 30),
+                const Row(
+                  children: [
+                    MenuCardWidget(),
+                    SizedBox(width: 20),
+                    MenuCardWidget(),
+                  ],
                 ),
-                Tab(
-                  child: Icon(
-                    Icons.event,
-                    color: Color.fromARGB(255, 238, 238, 238),
-                  ),
+                const SizedBox(height: 30),
+                const Row(
+                  children: [
+                    MenuCardWidget(),
+                    SizedBox(width: 20),
+                    MenuCardWidget(),
+                  ],
                 ),
-              ],
+              ]),
             ),
           ),
-        ),
-        body: TabBarView(
-          controller: tabController,
-          children: const [
-            OneTimeTasksView(),
-            TimerView(),
-            DailyTasksView(),
-          ],
         ),
       ),
     );
