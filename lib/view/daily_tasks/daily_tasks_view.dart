@@ -3,8 +3,7 @@ import 'package:garap/bloc/daily_tasks_cubit.dart';
 import 'package:garap/view/daily_tasks/daily_tasks_settings_view.dart';
 
 class DailyTasksView extends StatefulWidget {
-  final Function(void Function(void Function()))? callback;
-  const DailyTasksView({this.callback, super.key});
+  const DailyTasksView({super.key});
 
   @override
   State<DailyTasksView> createState() => _DailyTasksViewState();
@@ -20,9 +19,6 @@ class _DailyTasksViewState extends State<DailyTasksView> {
   initState() {
     provider.isDispose = false;
     provider.updateDay();
-    ////////////////////////////////////////////////////////////
-    //note, fitur reset status ketika hari berubah sedikit bug//
-    ////////////////////////////////////////////////////////////
     if (provider.day != provider.dbDay.get('day_box') &&
         provider.tasksBox.length > 0) {
       for (var i = 0; i < provider.tasksBox.length; i++) {
