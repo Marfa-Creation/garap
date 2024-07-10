@@ -228,7 +228,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                     child: BlocBuilder<TimerCubit, TimerModel>(
                       bloc: provider,
                       builder: (context, state) => Text(
-                          NumberFormat('00').format(state.timerHours),
+                          NumberFormat('00').format(provider.timerHours),
                           style: const TextStyle(
                               color: Color.fromARGB(255, 238, 238, 238),
                               fontSize: 30,
@@ -249,7 +249,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                     child: BlocBuilder<TimerCubit, TimerModel>(
                       bloc: provider,
                       builder: (context, state) => Text(
-                          NumberFormat('00').format(state.timerMinutes),
+                          NumberFormat('00').format(provider.timerMinutes),
                           style: const TextStyle(
                               color: Color.fromARGB(255, 238, 238, 238),
                               fontSize: 30,
@@ -270,7 +270,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                     child: BlocBuilder<TimerCubit, TimerModel>(
                       bloc: provider,
                       builder: (context, state) => Text(
-                        NumberFormat('00').format(state.timerSeconds),
+                        NumberFormat('00').format(provider.timerSeconds),
                         style: const TextStyle(
                             color: Color.fromARGB(255, 238, 238, 238),
                             fontSize: 30,
@@ -348,7 +348,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                       child: BlocBuilder<TimerCubit, TimerModel>(
                         bloc: provider,
                         builder: (context, state) => Text(
-                          state.breakRatio.toString(),
+                          provider.breakRatio.toString(),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 238, 238, 238),
@@ -371,9 +371,9 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                             child: BlocBuilder<TimerCubit, TimerModel>(
                               bloc: provider,
                               builder: (context, state) => InkWell(
-                                onTap: (state.breakRatio < 10)
+                                onTap: (provider.breakRatio < 10)
                                     ? () {
-                                        if (state.breakRatio < 10) {
+                                        if (provider.breakRatio < 10) {
                                           provider.breakRatio++;
                                         }
                                       }
@@ -395,9 +395,9 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                           child: BlocBuilder<TimerCubit, TimerModel>(
                             bloc: provider,
                             builder: (context, state) => InkWell(
-                              onTap: (state.breakRatio > 1)
+                              onTap: (provider.breakRatio > 1)
                                   ? () {
-                                      if (state.breakRatio > 1) {
+                                      if (provider.breakRatio > 1) {
                                         provider.breakRatio--;
                                       }
                                     }
@@ -445,8 +445,8 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                           backgroundColor:
                               const Color.fromARGB(255, 238, 238, 238),
                           onPressed: () {
-                            if (state.isTimerIncrease == true &&
-                                state.isTimerDecrease == false) {
+                            if (provider.isTimerIncrease == true &&
+                                provider.isTimerDecrease == false) {
                               provider.setBreakTime();
                             }
                             provider.isTimerIncrease = true;
@@ -480,21 +480,22 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                             isVisible = true;
                           });
                           //jika timer pertama kali di mulai atau selesai di reset
-                          if (state.isTimerRun == false) {
+                          if (provider.isTimerRun == false) {
                             provider.isTimerRun = true;
                             provider.isTimerIncrease = true;
                             provider.isTimerDecrease = false;
                             provider.isTimerPause = false;
+                            print('first condition ${provider.isTimerRun}');
                             setState(
                               () {
                                 iconController.forward();
                               },
                             );
                             //jika timer sedang mengurangi angka dan kondisi tidak di pause
-                          } else if (state.isTimerRun == true &&
-                              (state.isTimerIncrease == false &&
-                                  state.isTimerDecrease == true) &&
-                              state.isTimerPause == false) {
+                          } else if (provider.isTimerRun == true &&
+                              (provider.isTimerIncrease == false &&
+                                  provider.isTimerDecrease == true) &&
+                              provider.isTimerPause == false) {
                             provider.isTimerPause = true;
                             setState(
                               () {
@@ -502,10 +503,11 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                               },
                             );
                             //jika timer sedang menambah angka dan kondisi tidak di pause
-                          } else if (state.isTimerRun == true &&
-                              (state.isTimerIncrease == true &&
-                                  state.isTimerDecrease == false) &&
-                              state.isTimerPause == false) {
+                          } else if (provider.isTimerRun == true &&
+                              (provider.isTimerIncrease == true &&
+                                  provider.isTimerDecrease == false) &&
+                              provider.isTimerPause == false) {
+                                print('kondisi jalan');
                             provider.isTimerPause = true;
                             setState(
                               () {
@@ -513,24 +515,26 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                               },
                             );
                             //jika timer sedang mengurangi angka dan kondisi sedang di pause
-                          } else if (state.isTimerRun == true &&
-                              (state.isTimerIncrease == false &&
-                                  state.isTimerDecrease == true) &&
-                              state.isTimerPause == true) {
+                          } else if (provider.isTimerRun == true &&
+                              (provider.isTimerIncrease == false &&
+                                  provider.isTimerDecrease == true) &&
+                              provider.isTimerPause == true) {
                             provider.isTimerPause = false;
                             setState(() {
                               iconController.forward();
                             });
                             //jika timer sedang menambah angka dan kondisi sedang di pause
-                          } else if (state.isTimerRun == true &&
-                              (state.isTimerIncrease == true &&
-                                  state.isTimerDecrease == false) &&
-                              state.isTimerPause == true) {
+                          } else if (provider.isTimerRun == true &&
+                              (provider.isTimerIncrease == true &&
+                                  provider.isTimerDecrease == false) &&
+                              provider.isTimerPause == true) {
                             provider.isTimerPause = false;
                             setState(() {
                               iconController.forward();
                             });
-                          } else {}
+                          } else {
+                            print('malah else yang jalan');
+                          }
                         },
                         child: AnimatedIcon(
                             color: const Color.fromARGB(255, 23, 23, 23),
