@@ -19,7 +19,8 @@ class RestworkTimerView extends StatefulWidget {
   State<RestworkTimerView> createState() => _RestworkTimerViewState();
 }
 
-class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProviderStateMixin {
+class _RestworkTimerViewState extends State<RestworkTimerView>
+    with TickerProviderStateMixin {
   ////////////
   //Override//
   ////////////
@@ -39,17 +40,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
 
   @override
   void dispose() {
-    provider.isTimerRun = false;
-    provider.isTimerIncrease = false;
-    provider.isTimerDecrease = false;
-    provider.isTimerPause = false;
-    provider.status = 'Idle';
-    provider.timerSeconds = 0;
-    provider.timerMinutes = 0;
-    provider.timerHours = 0;
     provider.isDispose = true;
-
-    //dispose controlller
     iconController.dispose();
     visibilityController.dispose();
     super.dispose();
@@ -60,8 +51,6 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
   ////////////
   final TimerCubit provider = TimerCubit();
   final ValueNotifier<bool> valueNotifier = ValueNotifier<bool>(true);
-
-  //UI/UX
   bool isVisible = false;
   late AnimationController iconController;
   late AnimationController visibilityController;
@@ -103,7 +92,6 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                         width: 50,
                         height: 50,
                         child: IconButton(
-                          
                           onPressed: () {
                             Navigator.pop(context, true);
                           },
@@ -163,7 +151,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                 if (context.mounted && getConfirmation == true) {
                   Navigator.pop(context);
                 }
-              }else{
+              } else {
                 Navigator.pop(context);
               }
             },
@@ -203,13 +191,18 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
             //Display status
             Padding(
               padding: const EdgeInsets.only(bottom: 20),
-              child: Text(
-                provider.setStatus(),
-                style: const TextStyle(
-                    color: Color.fromARGB(255, 238, 238, 238),
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold),
-              ),
+              child: BlocBuilder<TimerCubit, TimerModel>(
+                  bloc: provider,
+                  builder: (context, state) {
+                    print('valuelistenablebuilder');
+                    return Text(
+                      provider.status,
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 238, 238, 238),
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold),
+                    );
+                  }),
             ),
             //Display timer
             Row(
@@ -448,12 +441,13 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                             if (provider.isTimerIncrease == true &&
                                 provider.isTimerDecrease == false) {
                               provider.setBreakTime();
+                              provider.isTimerIncrease = true;
+                              provider.isTimerDecrease = false;
+                              provider.isTimerPause = false;
+                              provider.isTimerDecrease = true;
+                              provider.isTimerIncrease = false;
+                              provider.status = 'BreakingTime';
                             }
-                            provider.isTimerIncrease = true;
-                            provider.isTimerDecrease = false;
-                            provider.isTimerPause = false;
-                            provider.isTimerDecrease = true;
-                            provider.isTimerIncrease = false;
                             setState(() {
                               iconController.forward();
                             });
@@ -485,7 +479,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                             provider.isTimerIncrease = true;
                             provider.isTimerDecrease = false;
                             provider.isTimerPause = false;
-                            print('first condition ${provider.isTimerRun}');
+                            provider.status = 'Working Time';
                             setState(
                               () {
                                 iconController.forward();
@@ -497,6 +491,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                                   provider.isTimerDecrease == true) &&
                               provider.isTimerPause == false) {
                             provider.isTimerPause = true;
+                            provider.status = 'Paused';
                             setState(
                               () {
                                 iconController.reverse();
@@ -507,8 +502,8 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                               (provider.isTimerIncrease == true &&
                                   provider.isTimerDecrease == false) &&
                               provider.isTimerPause == false) {
-                                print('kondisi jalan');
                             provider.isTimerPause = true;
+                            provider.status = 'Paused';
                             setState(
                               () {
                                 iconController.reverse();
@@ -520,6 +515,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                                   provider.isTimerDecrease == true) &&
                               provider.isTimerPause == true) {
                             provider.isTimerPause = false;
+                            provider.status = 'Breaking Time';
                             setState(() {
                               iconController.forward();
                             });
@@ -529,12 +525,11 @@ class _RestworkTimerViewState extends State<RestworkTimerView> with TickerProvid
                                   provider.isTimerDecrease == false) &&
                               provider.isTimerPause == true) {
                             provider.isTimerPause = false;
+                            provider.status = 'Working Time';
                             setState(() {
                               iconController.forward();
                             });
-                          } else {
-                            print('malah else yang jalan');
-                          }
+                          } else {}
                         },
                         child: AnimatedIcon(
                             color: const Color.fromARGB(255, 23, 23, 23),

@@ -16,7 +16,7 @@ class TimerModel {
     this.isTimerPause = false, //8
     this.isDispose = false, //9
     this.audioMode = true, //11
-    this.status = 'Idle', //12
+    required this.status, //12
   });
 
   ////////////
@@ -34,6 +34,4 @@ class TimerModel {
   final bool audioMode; //11
   //UI/UX
   final String status;
-
-
 }

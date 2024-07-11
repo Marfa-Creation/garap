@@ -50,7 +50,3 @@ class MenuCardWidget extends StatelessWidget {
     );
   }
 }
-
-var a = GestureDetector(
-  onTap: () {},
-);

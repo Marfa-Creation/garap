@@ -11,25 +11,26 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
   DailyTasksCubit()
       : super(
           DailyTasksModel(
-            tasksView: const [],
-            day: DateFormat('EEEE').format(
-              DateTime.now(),
-            ),
-          ),
+              tasksView: const [],
+              day: DateFormat('EEEE').format(
+                DateTime.now(),
+              ),
+              onEvery: const {}),
         );
+
   //////////
   //getter//
   //////////
   TextEditingController get taskController => state.taskController;
   TextEditingController get descriptionController =>
       state.descriptionController;
-  bool get onSunday => state.onSunday;
-  bool get onMonday => state.onMonday;
-  bool get onTuesday => state.onTuesday;
-  bool get onWednesday => state.onWednesday;
-  bool get onThursday => state.onThursday;
-  bool get onFriday => state.onFriday;
-  bool get onSaturday => state.onSaturday;
+  // bool get onSunday => state.onSunday;
+  // bool get onMonday => state.onMonday;
+  // bool get onTuesday => state.onTuesday;
+  // bool get onWednesday => state.onWednesday;
+  // bool get onThursday => state.onThursday;
+  // bool get onFriday => state.onFriday;
+  // bool get onSaturday => state.onSaturday;
   Box<dynamic> get tasksBox => state.tasksBox;
   String get day => state.day;
   Box<dynamic> get dbDay => state.dbDay;
@@ -38,129 +39,134 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
   //////////
   //setter//
   //////////
+  set onEvery(Set<Days> value) {
+    emit(
+      DailyTasksModel(
+        tasksView: state.tasksView,
+        day: state.day,
+        onEvery: value,
+      ),
+    );
+  }
 
   //////////////////////////////////////////////////////////////////////
   //setter ini mungkin tidak akan diperlukan setelah kode dimodifikasi//
   //////////////////////////////////////////////////////////////////////
   set tasksView(List<Map<String, dynamic>> value) {
-    emit(DailyTasksModel(
-      tasksView: value,
-      day: state.day,
-      onSunday: state.onSunday,
-      onMonday: state.onMonday,
-      onTuesday: state.onTuesday,
-      onWednesday: state.onWednesday,
-      onThursday: state.onThursday,
-      onFriday: state.onFriday,
-      onSaturday: state.onSaturday,
-    ));
+    emit(
+        DailyTasksModel(tasksView: value, day: state.day, onEvery: state.onEvery
+            // onSunday: state.onSunday,
+            // onMonday: state.onMonday,
+            // onTuesday: state.onTuesday,
+            // onWednesday: state.onWednesday,
+            // onThursday: state.onThursday,
+            // onFriday: state.onFriday,
+            // onSaturday: state.onSaturday,
+            ));
   }
 
   set onSunday(bool value) {
     emit(DailyTasksModel(
-      tasksView: state.tasksView,
-      day: state.day,
-      onSunday: value,
-      onMonday: state.onMonday,
-      onTuesday: state.onTuesday,
-      onWednesday: state.onWednesday,
-      onThursday: state.onThursday,
-      onFriday: state.onFriday,
-      onSaturday: state.onSaturday,
-    ));
+        tasksView: state.tasksView, day: state.day, onEvery: state.onEvery
+        // onSunday: value,
+        // onMonday: state.onMonday,
+        // onTuesday: state.onTuesday,
+        // onWednesday: state.onWednesday,
+        // onThursday: state.onThursday,
+        // onFriday: state.onFriday,
+        // onSaturday: state.onSaturday,
+        ));
   }
 
   set onMonday(bool value) {
     emit(DailyTasksModel(
-      tasksView: state.tasksView,
-      day: state.day,
-      onSunday: state.onSunday,
-      onMonday: value,
-      onTuesday: state.onTuesday,
-      onWednesday: state.onWednesday,
-      onThursday: state.onThursday,
-      onFriday: state.onFriday,
-      onSaturday: state.onSaturday,
-    ));
+        tasksView: state.tasksView, day: state.day, onEvery: state.onEvery
+        // onSunday: state.onSunday,
+        // onMonday: value,
+        // onTuesday: state.onTuesday,
+        // onWednesday: state.onWednesday,
+        // onThursday: state.onThursday,
+        // onFriday: state.onFriday,
+        // onSaturday: state.onSaturday,
+        ));
   }
 
   set onTuesday(bool value) {
     emit(DailyTasksModel(
-      tasksView: state.tasksView,
-      day: state.day,
-      onSunday: state.onSunday,
-      onMonday: state.onMonday,
-      onTuesday: value,
-      onWednesday: state.onWednesday,
-      onThursday: state.onThursday,
-      onFriday: state.onFriday,
-      onSaturday: state.onSaturday,
-    ));
+        tasksView: state.tasksView, day: state.day, onEvery: state.onEvery
+        // onSunday: state.onSunday,
+        // onMonday: state.onMonday,
+        // onTuesday: value,
+        // onWednesday: state.onWednesday,
+        // onThursday: state.onThursday,
+        // onFriday: state.onFriday,
+        // onSaturday: state.onSaturday,
+        ));
   }
 
   set onWednesday(bool value) {
     emit(DailyTasksModel(
-      tasksView: state.tasksView,
-      day: state.day,
-      onSunday: state.onSunday,
-      onMonday: state.onMonday,
-      onTuesday: state.onTuesday,
-      onWednesday: value,
-      onThursday: state.onThursday,
-      onFriday: state.onFriday,
-      onSaturday: state.onSaturday,
-    ));
+        tasksView: state.tasksView, day: state.day, onEvery: state.onEvery
+        // onSunday: state.onSunday,
+        // onMonday: state.onMonday,
+        // onTuesday: state.onTuesday,
+        // onWednesday: value,
+        // onThursday: state.onThursday,
+        // onFriday: state.onFriday,
+        // onSaturday: state.onSaturday,
+        ));
   }
 
   set onThursday(bool value) {
     emit(DailyTasksModel(
-      tasksView: state.tasksView,
-      day: state.day,
-      onSunday: state.onSunday,
-      onMonday: state.onMonday,
-      onTuesday: state.onTuesday,
-      onWednesday: state.onWednesday,
-      onThursday: value,
-      onFriday: state.onFriday,
-      onSaturday: state.onSaturday,
-    ));
+        tasksView: state.tasksView, day: state.day, onEvery: state.onEvery
+        // onSunday: state.onSunday,
+        // onMonday: state.onMonday,
+        // onTuesday: state.onTuesday,
+        // onWednesday: state.onWednesday,
+        // onThursday: value,
+        // onFriday: state.onFriday,
+        // onSaturday: state.onSaturday,
+        ));
   }
 
   set onFriday(bool value) {
     emit(DailyTasksModel(
-      tasksView: state.tasksView,
-      day: state.day,
-      onSunday: state.onSunday,
-      onMonday: state.onMonday,
-      onTuesday: state.onTuesday,
-      onWednesday: state.onWednesday,
-      onThursday: state.onThursday,
-      onFriday: value,
-      onSaturday: state.onSaturday,
-    ));
+        tasksView: state.tasksView, day: state.day, onEvery: state.onEvery
+        // onSunday: state.onSunday,
+        // onMonday: state.onMonday,
+        // onTuesday: state.onTuesday,
+        // onWednesday: state.onWednesday,
+        // onThursday: state.onThursday,
+        // onFriday: value,
+        // onSaturday: state.onSaturday,
+        ));
   }
 
   set onSaturday(bool value) {
     emit(DailyTasksModel(
-      tasksView: state.tasksView,
-      day: state.day,
-      onSunday: state.onSunday,
-      onMonday: state.onMonday,
-      onTuesday: state.onTuesday,
-      onWednesday: state.onWednesday,
-      onThursday: state.onThursday,
-      onFriday: state.onFriday,
-      onSaturday: value,
-    ));
+        tasksView: state.tasksView, day: state.day, onEvery: state.onEvery
+        // onSunday: state.onSunday,
+        // onMonday: state.onMonday,
+        // onTuesday: state.onTuesday,
+        // onWednesday: state.onWednesday,
+        // onThursday: state.onThursday,
+        // onFriday: state.onFriday,
+        // onSaturday: value,
+        ));
   }
 
   set isDispose(bool value) {
     emit(DailyTasksModel(
-        tasksView: state.tasksView, day: state.day, isDispose: value));
+        tasksView: state.tasksView,
+        day: state.day,
+        isDispose: value,
+        onEvery: state.onEvery));
   }
 
   set day(String value) {
-    emit(DailyTasksModel(tasksView: state.tasksView, day: value));
+    emit(DailyTasksModel(
+        tasksView: state.tasksView, day: value, onEvery: state.onEvery));
   }
 
   void refreshTasksView() {
@@ -184,7 +190,10 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
         .cast<Map<String, dynamic>>()
         .toList();
 
-    emit(DailyTasksModel(tasksView: data.reversed.toList(), day: state.day));
+    emit(DailyTasksModel(
+        tasksView: data.reversed.toList(),
+        day: state.day,
+        onEvery: state.onEvery));
     emit(DailyTasksModel(
         tasksView: state.tasksView.where((element) {
           switch (state.day.toLowerCase()) {
@@ -210,7 +219,8 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
               return element['saturday'];
           }
         }).toList(),
-        day: state.day));
+        day: state.day,
+        onEvery: state.onEvery));
 
     state.tasksView.sort((now, next) {
       var a = (now['status']) ? 1 : 0;
@@ -229,7 +239,8 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
         } else {
           emit(DailyTasksModel(
               tasksView: state.tasksView,
-              day: DateFormat('EEEE').format(DateTime.now())));
+              day: DateFormat('EEEE').format(DateTime.now()),
+              onEvery: state.onEvery));
         }
       },
     );
@@ -318,23 +329,17 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                         child: StatefulBuilder(
                           builder: (context, setState) =>
                               MiniSwitchButtonWidget(
-                                  buttonColor: (state.onSunday)
-                                      ? Colors.lightGreenAccent[400]
-                                      : Colors.grey[300],
-                                  value: state.onSunday,
+                                  buttonColor:
+                                      (state.onEvery.contains(Days.sunday))
+                                          ? Colors.lightGreenAccent[400]
+                                          : Colors.grey[300],
+                                  value: state.onEvery.contains(Days.sunday),
                                   onChanged: () {
                                     // state.onSunday = !state.onSunday;
                                     emit(DailyTasksModel(
-                                      tasksView: state.tasksView,
-                                      day: state.day,
-                                      onSunday: !state.onSunday,
-                                      onMonday: state.onMonday,
-                                      onTuesday: state.onTuesday,
-                                      onWednesday: state.onWednesday,
-                                      onThursday: state.onThursday,
-                                      onFriday: state.onFriday,
-                                      onSaturday: state.onSaturday,
-                                    ));
+                                        tasksView: state.tasksView,
+                                        day: state.day,
+                                        onEvery: state.onEvery));
                                     setState(() {});
                                   },
                                   buttonText: 'Sun'),
@@ -344,31 +349,43 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                       //monday//
                       //////////
                       Padding(
-                          padding: const EdgeInsets.all(2),
-                          child: StatefulBuilder(
-                            builder: (context, setState) =>
-                                MiniSwitchButtonWidget(
-                                    buttonColor: (state.onMonday)
-                                        ? Colors.lightGreenAccent[400]
-                                        : Colors.grey[300],
-                                    value: state.onMonday,
-                                    onChanged: () {
-                                      // provider.onMonday = !provider.onMonday;
-                                      emit(DailyTasksModel(
-                                        tasksView: state.tasksView,
-                                        day: state.day,
-                                        onSunday: state.onSunday,
-                                        onMonday: !state.onMonday,
-                                        onTuesday: state.onTuesday,
-                                        onWednesday: state.onWednesday,
-                                        onThursday: state.onThursday,
-                                        onFriday: state.onFriday,
-                                        onSaturday: state.onSaturday,
-                                      ));
-                                      setState(() {});
-                                    },
-                                    buttonText: 'Mon'),
-                          )),
+                        padding: const EdgeInsets.all(2),
+                        child: StatefulBuilder(
+                          builder: (context, setState) =>
+                              MiniSwitchButtonWidget(
+                                  buttonColor:
+                                      (state.onEvery.contains(Days.monday))
+                                          ? Colors.lightGreenAccent[400]
+                                          : Colors.grey[300],
+                                  value: state.onEvery.contains(Days.monday),
+                                  onChanged: () {
+                                    //jika tombol sedang dalam kondisi mati, maka if dijalankan
+                                    if (state.onEvery.contains(Days.monday) ==
+                                        false) {
+                                      emit(
+                                        DailyTasksModel(
+                                          day: state.day,
+                                          tasksView: state.tasksView,
+                                          onEvery: state.onEvery.toSet()
+                                            ..add(Days.monday),
+                                        ),
+                                      );
+                                      //jika tombol sedang dalam kondisi menyala, maka else dijalankan
+                                    } else {
+                                      emit(
+                                        DailyTasksModel(
+                                          day: state.day,
+                                          tasksView: state.tasksView,
+                                          onEvery: state.onEvery.toSet()
+                                            ..remove(Days.monday),
+                                        ),
+                                      );
+                                    }
+                                    setState(() {});
+                                  },
+                                  buttonText: 'Mon'),
+                        ),
+                      ),
                       ///////////
                       //tuesday//
                       ///////////
@@ -377,23 +394,34 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                         child: StatefulBuilder(
                           builder: (context, setState) =>
                               MiniSwitchButtonWidget(
-                                  buttonColor: (state.onTuesday)
-                                      ? Colors.lightGreenAccent[400]
-                                      : Colors.grey[300],
-                                  value: state.onTuesday,
+                                  buttonColor:
+                                      (state.onEvery.contains(Days.tuesday))
+                                          ? Colors.lightGreenAccent[400]
+                                          : Colors.grey[300],
+                                  value: state.onEvery.contains(Days.tuesday),
                                   onChanged: () {
-                                    // provider.onTuesday = !provider.onTuesday;
-                                    emit(DailyTasksModel(
-                                      tasksView: state.tasksView,
-                                      day: state.day,
-                                      onSunday: state.onSunday,
-                                      onMonday: state.onMonday,
-                                      onTuesday: !state.onTuesday,
-                                      onWednesday: state.onWednesday,
-                                      onThursday: state.onThursday,
-                                      onFriday: state.onFriday,
-                                      onSaturday: state.onSaturday,
-                                    ));
+                                    //jika tombol sedang dalam kondisi mati, maka if dijalankan
+                                    if (state.onEvery.contains(Days.tuesday) ==
+                                        false) {
+                                      emit(
+                                        DailyTasksModel(
+                                          day: state.day,
+                                          tasksView: state.tasksView,
+                                          onEvery: state.onEvery.toSet()
+                                            ..add(Days.tuesday),
+                                        ),
+                                      );
+                                      //jika tombol sedang dalam kondisi menyala, maka else dijalankan
+                                    } else {
+                                      emit(
+                                        DailyTasksModel(
+                                          day: state.day,
+                                          tasksView: state.tasksView,
+                                          onEvery: state.onEvery.toSet()
+                                            ..remove(Days.tuesday),
+                                        ),
+                                      );
+                                    }
                                     setState(() {});
                                   },
                                   buttonText: 'Tue'),
@@ -407,23 +435,35 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                         child: StatefulBuilder(
                           builder: (context, setState) =>
                               MiniSwitchButtonWidget(
-                                  buttonColor: (state.onWednesday)
-                                      ? Colors.lightGreenAccent[400]
-                                      : Colors.grey[300],
-                                  value: state.onWednesday,
+                                  buttonColor:
+                                      (state.onEvery.contains(Days.wednesday))
+                                          ? Colors.lightGreenAccent[400]
+                                          : Colors.grey[300],
+                                  value: state.onEvery.contains(Days.wednesday),
                                   onChanged: () {
-                                    // provider.onWednesday = !provider.onWednesday;
-                                    emit(DailyTasksModel(
-                                      tasksView: state.tasksView,
-                                      day: state.day,
-                                      onSunday: state.onSunday,
-                                      onMonday: state.onMonday,
-                                      onTuesday: state.onTuesday,
-                                      onWednesday: !state.onWednesday,
-                                      onThursday: state.onThursday,
-                                      onFriday: state.onFriday,
-                                      onSaturday: state.onSaturday,
-                                    ));
+                                    //jika tombol sedang dalam kondisi mati, maka if dijalankan
+                                    if (state.onEvery
+                                            .contains(Days.wednesday) ==
+                                        false) {
+                                      emit(
+                                        DailyTasksModel(
+                                          day: state.day,
+                                          tasksView: state.tasksView,
+                                          onEvery: state.onEvery.toSet()
+                                            ..add(Days.wednesday),
+                                        ),
+                                      );
+                                      //jika tombol sedang dalam kondisi menyala, maka else dijalankan
+                                    } else {
+                                      emit(
+                                        DailyTasksModel(
+                                          day: state.day,
+                                          tasksView: state.tasksView,
+                                          onEvery: state.onEvery.toSet()
+                                            ..remove(Days.wednesday),
+                                        ),
+                                      );
+                                    }
                                     setState(() {});
                                   },
                                   buttonText: 'Wed'),
@@ -437,23 +477,34 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                         child: StatefulBuilder(
                           builder: (context, setState) =>
                               MiniSwitchButtonWidget(
-                                  buttonColor: (state.onThursday)
-                                      ? Colors.lightGreenAccent[400]
-                                      : Colors.grey[300],
-                                  value: state.onThursday,
+                                  buttonColor:
+                                      (state.onEvery.contains(Days.thursday))
+                                          ? Colors.lightGreenAccent[400]
+                                          : Colors.grey[300],
+                                  value: state.onEvery.contains(Days.thursday),
                                   onChanged: () {
-                                    // provider.onThursday = !provider.onThursday;
-                                    emit(DailyTasksModel(
-                                      tasksView: state.tasksView,
-                                      day: state.day,
-                                      onSunday: state.onSunday,
-                                      onMonday: state.onMonday,
-                                      onTuesday: state.onTuesday,
-                                      onWednesday: state.onWednesday,
-                                      onThursday: !state.onThursday,
-                                      onFriday: state.onFriday,
-                                      onSaturday: state.onSaturday,
-                                    ));
+                                    //jika tombol sedang dalam kondisi mati, maka if dijalankan
+                                    if (state.onEvery.contains(Days.thursday) ==
+                                        false) {
+                                      emit(
+                                        DailyTasksModel(
+                                          day: state.day,
+                                          tasksView: state.tasksView,
+                                          onEvery: state.onEvery.toSet()
+                                            ..add(Days.thursday),
+                                        ),
+                                      );
+                                      //jika tombol sedang dalam kondisi menyala, maka else dijalankan
+                                    } else {
+                                      emit(
+                                        DailyTasksModel(
+                                          day: state.day,
+                                          tasksView: state.tasksView,
+                                          onEvery: state.onEvery.toSet()
+                                            ..remove(Days.thursday),
+                                        ),
+                                      );
+                                    }
                                     setState(() {});
                                   },
                                   buttonText: 'Thu'),
@@ -467,23 +518,34 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                         child: StatefulBuilder(
                           builder: (context, setState) =>
                               MiniSwitchButtonWidget(
-                                  buttonColor: (state.onFriday)
-                                      ? Colors.lightGreenAccent[400]
-                                      : Colors.grey[300],
-                                  value: state.onFriday,
+                                  buttonColor:
+                                      (state.onEvery.contains(Days.friday))
+                                          ? Colors.lightGreenAccent[400]
+                                          : Colors.grey[300],
+                                  value: state.onEvery.contains(Days.friday),
                                   onChanged: () {
-                                    // provider.onFriday = !provider.onFriday;
-                                    emit(DailyTasksModel(
-                                      tasksView: state.tasksView,
-                                      day: state.day,
-                                      onSunday: state.onSunday,
-                                      onMonday: state.onMonday,
-                                      onTuesday: state.onTuesday,
-                                      onWednesday: state.onWednesday,
-                                      onThursday: state.onThursday,
-                                      onFriday: !state.onFriday,
-                                      onSaturday: state.onSaturday,
-                                    ));
+                                    //jika tombol sedang dalam kondisi mati, maka if dijalankan
+                                    if (state.onEvery.contains(Days.friday) ==
+                                        false) {
+                                      emit(
+                                        DailyTasksModel(
+                                          day: state.day,
+                                          tasksView: state.tasksView,
+                                          onEvery: state.onEvery.toSet()
+                                            ..add(Days.friday),
+                                        ),
+                                      );
+                                      //jika tombol sedang dalam kondisi menyala, maka else dijalankan
+                                    } else {
+                                      emit(
+                                        DailyTasksModel(
+                                          day: state.day,
+                                          tasksView: state.tasksView,
+                                          onEvery: state.onEvery.toSet()
+                                            ..remove(Days.friday),
+                                        ),
+                                      );
+                                    }
                                     setState(() {});
                                   },
                                   buttonText: 'Fri'),
@@ -497,23 +559,34 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                         child: StatefulBuilder(
                           builder: (context, setState) =>
                               MiniSwitchButtonWidget(
-                                  buttonColor: (state.onSaturday)
-                                      ? Colors.lightGreenAccent[400]
-                                      : Colors.grey[300],
-                                  value: state.onSaturday,
+                                  buttonColor:
+                                      (state.onEvery.contains(Days.saturday))
+                                          ? Colors.lightGreenAccent[400]
+                                          : Colors.grey[300],
+                                  value: state.onEvery.contains(Days.saturday),
                                   onChanged: () {
-                                    // provider.onSaturday = !provider.onSaturday;
-                                    emit(DailyTasksModel(
-                                      tasksView: state.tasksView,
-                                      day: state.day,
-                                      onSunday: state.onSunday,
-                                      onMonday: state.onMonday,
-                                      onTuesday: state.onTuesday,
-                                      onWednesday: state.onWednesday,
-                                      onThursday: state.onThursday,
-                                      onFriday: state.onFriday,
-                                      onSaturday: !state.onSaturday,
-                                    ));
+                                    //jika tombol sedang dalam kondisi mati, maka if dijalankan
+                                    if (state.onEvery.contains(Days.saturday) ==
+                                        false) {
+                                      emit(
+                                        DailyTasksModel(
+                                          day: state.day,
+                                          tasksView: state.tasksView,
+                                          onEvery: state.onEvery.toSet()
+                                            ..add(Days.saturday),
+                                        ),
+                                      );
+                                      //jika tombol sedang dalam kondisi menyala, maka else dijalankan
+                                    } else {
+                                      emit(
+                                        DailyTasksModel(
+                                          day: state.day,
+                                          tasksView: state.tasksView,
+                                          onEvery: state.onEvery.toSet()
+                                            ..remove(Days.saturday),
+                                        ),
+                                      );
+                                    }
                                     setState(() {});
                                   },
                                   buttonText: 'Sat'),
@@ -541,13 +614,17 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                                       state.tasksBox.getAt(itemKey)['status'],
                                   'task': taskController.text,
                                   'description': descriptionController.text,
-                                  'sunday': onSunday,
-                                  'monday': onMonday,
-                                  'tuesday': onTuesday,
-                                  'wednesday': onWednesday,
-                                  'thursday': onThursday,
-                                  'friday': onFriday,
-                                  'saturday': onSaturday
+                                  'sunday': state.onEvery.contains(Days.sunday),
+                                  'monday': state.onEvery.contains(Days.monday),
+                                  'tuesday':
+                                      state.onEvery.contains(Days.tuesday),
+                                  'wednesday':
+                                      state.onEvery.contains(Days.wednesday),
+                                  'thursday':
+                                      state.onEvery.contains(Days.thursday),
+                                  'friday': state.onEvery.contains(Days.friday),
+                                  'saturday':
+                                      state.onEvery.contains(Days.saturday),
                                 },
                               );
                               //jika user memilih untuk menambah daftar tugas
@@ -557,24 +634,21 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                                   'status': false,
                                   'task': taskController.text,
                                   'description': descriptionController.text,
-                                  'sunday': onSunday,
-                                  'monday': onMonday,
-                                  'tuesday': onTuesday,
-                                  'wednesday': onWednesday,
-                                  'thursday': onThursday,
-                                  'friday': onFriday,
-                                  'saturday': onSaturday
+                                  'sunday': state.onEvery.contains(Days.sunday),
+                                  'monday': state.onEvery.contains(Days.monday),
+                                  'tuesday':
+                                      state.onEvery.contains(Days.tuesday),
+                                  'wednesday':
+                                      state.onEvery.contains(Days.wednesday),
+                                  'thursday':
+                                      state.onEvery.contains(Days.thursday),
+                                  'friday': state.onEvery.contains(Days.friday),
+                                  'saturday':
+                                      state.onEvery.contains(Days.saturday),
                                 },
                               );
                             }
                           }
-                          onSunday = false;
-                          onMonday = false;
-                          onTuesday = false;
-                          onWednesday = false;
-                          onThursday = false;
-                          onFriday = false;
-                          onSaturday = false;
                           refreshTasksView();
                           if (context.mounted) {
                             Navigator.pop(context);

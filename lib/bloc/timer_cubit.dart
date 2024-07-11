@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:garap/model/timer_model.dart';
 
 class TimerCubit extends Cubit<TimerModel> {
-  TimerCubit() : super(const TimerModel());
+  TimerCubit() : super(TimerModel(status: 'Idle'));
   //////////
   //setter//
   //////////
@@ -225,21 +225,6 @@ class TimerCubit extends Cubit<TimerModel> {
   int get timerMinutes => state.timerMinutes;
   int get timerHours => state.timerHours;
 
-  String setStatus() {
-    if (state.isTimerPause == true) {
-      return 'Paused';
-    } else if ((state.isTimerIncrease == true ||
-            state.isTimerDecrease == false) &&
-        state.isTimerRun == true) {
-      return 'Working Time';
-    } else if ((state.isTimerIncrease == false ||
-            state.isTimerDecrease == true) &&
-        state.isTimerRun == true) {
-      return 'Breaking Time';
-    } else {
-      return 'Idle';
-    }
-  }
   //////////
   //method//
   //////////
@@ -271,7 +256,7 @@ class TimerCubit extends Cubit<TimerModel> {
             isTimerPause: state.isTimerPause, //8
             isDispose: state.isDispose, //9
             audioMode: state.audioMode, //11
-            status: 'Working Time', //12
+            status: state.status, //12
           ),
         );
         if (state.timerSeconds == 60) {
@@ -339,7 +324,7 @@ class TimerCubit extends Cubit<TimerModel> {
               isTimerPause: state.isTimerPause, //8
               isDispose: state.isDispose, //9
               audioMode: state.audioMode, //11
-              status: 'Breaking Time', //12
+              status: state.status, //12
             ),
           );
 
@@ -462,8 +447,6 @@ class TimerCubit extends Cubit<TimerModel> {
             state.timerMinutes == 0 &&
             state.timerHours == 0)) {
       timeEndSound.play(AssetSource('digital_alarm.mp3'));
-      // state.isTimerPause = true;
-      // state.iconController.forward();
 
       emit(
         TimerModel(
@@ -508,6 +491,7 @@ class TimerCubit extends Cubit<TimerModel> {
             child: Material(
               child: InkWell(
                 onTap: () {
+                  status = 'Working Time';
                   Navigator.pop(context);
                 },
                 child: const Center(
@@ -538,9 +522,11 @@ class TimerCubit extends Cubit<TimerModel> {
               isTimerPause: false, //8
               isDispose: state.isDispose, //9
               audioMode: state.audioMode, //11
-              status: state.status, //12
+              status: 'Working Time', //12
             ),
           );
+          ;
+          
         },
       );
     }
