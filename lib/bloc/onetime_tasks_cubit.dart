@@ -11,23 +11,6 @@ class OnetimeTasksCubit extends Cubit<OnetimeTasksModel> {
           ),
         );
 
-  //////////
-  //setter//
-  //////////
-  // set taskController(String value) {
-  //   state.taskController.text = value;
-  //   emit(
-  //     OnetimeTasksModel(
-  //       tasksView: state.tasksView,
-  //       taskController: state.taskController,
-  //       descriptionController: state.descriptionController,
-  //     ),
-  //   );
-  // }
-
-  //////////
-  //getter//
-  //////////
   Box<dynamic> get tasksBox => state.tasksBox;
   List<Map<String, dynamic>> get tasksView => state.tasksView;
 
@@ -45,12 +28,7 @@ class OnetimeTasksCubit extends Cubit<OnetimeTasksModel> {
         .cast<Map<String, dynamic>>()
         .toList();
 
-    // state.tasksView = data.reversed.toList();
-    emit(
-      OnetimeTasksModel(
-        tasksView: data.reversed.toList(),
-      ),
-    );
+    emit(state.copyWith(tasksView: data.reversed.toList()));
   }
 
   Future<void> _addTask(Map<String, dynamic> data) async {
@@ -154,9 +132,9 @@ class OnetimeTasksCubit extends Cubit<OnetimeTasksModel> {
             child: Container(
               height: 250,
               padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.cyan[200],
-                borderRadius: const BorderRadius.only(
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 238, 238, 238),
+                borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(10),
                   topRight: Radius.circular(10),
                 ),
@@ -167,19 +145,32 @@ class OnetimeTasksCubit extends Cubit<OnetimeTasksModel> {
                   TextField(
                     maxLength: 30,
                     controller: taskController,
-                    decoration: const InputDecoration(label: Text('Task')),
+                    style:
+                        const TextStyle(color: Color.fromARGB(255, 23, 23, 23)),
+                    decoration: const InputDecoration(
+                        label: Text(
+                      'Task',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    )),
                   ),
                   TextField(
                     maxLength: 100,
                     controller: descriptionController,
-                    decoration:
-                        const InputDecoration(label: Text('Description')),
+                    style:
+                        const TextStyle(color: Color.fromARGB(255, 23, 23, 23)),
+                    decoration: const InputDecoration(
+                      label: Text(
+                        'Description',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 7),
                     child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.cyan[700],
+                          backgroundColor:
+                              const Color.fromARGB(255, 68, 68, 68),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(3),
                           ),
@@ -191,15 +182,15 @@ class OnetimeTasksCubit extends Cubit<OnetimeTasksModel> {
                               'description': descriptionController.text,
                             });
 
-                            // state.taskController.text = '';
-                            // state.descriptionController.text = '';
                             refreshTaskView();
                             if (context.mounted) {
                               Navigator.pop(context);
                             }
                           }
                         },
-                        child: const Text('Add')),
+                        child: const Text('Add',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 238, 238, 238)))),
                   )
                 ],
               ),

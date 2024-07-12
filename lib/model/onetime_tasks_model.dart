@@ -11,4 +11,8 @@ class OnetimeTasksModel {
 
   final List<Map<String, dynamic>> tasksView;
   final Box<dynamic> tasksBox = Hive.box('one_time_task_box');
+
+  OnetimeTasksModel copyWith({List<Map<String, dynamic>>? tasksView}) {
+    return OnetimeTasksModel(tasksView: tasksView ?? this.tasksView);
+  }
 }

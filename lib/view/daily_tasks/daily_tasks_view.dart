@@ -126,7 +126,7 @@ class _DailyTasksViewState extends State<DailyTasksView> {
                   children: [
                     Text(' - ${currentTask['description']}'),
                     Text(
-                        'status: ${(currentTask['status'] ? 'selesai' : 'belum')}')
+                        'status: ${(currentTask['status'] ? 'Complete' : 'Uncomplete')}')
                   ],
                 ),
               ),

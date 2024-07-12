@@ -11,149 +11,29 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
   DailyTasksCubit()
       : super(
           DailyTasksModel(
-              tasksView: const [],
-              day: DateFormat('EEEE').format(
-                DateTime.now(),
-              ),
-              onEvery: const {}),
+            tasksView: const [],
+            day: DateFormat('EEEE').format(DateTime.now()),
+            onEvery: const {},
+            isDispose: false,
+          ),
         );
 
   //////////
   //getter//
   //////////
-  TextEditingController get taskController => state.taskController;
-  TextEditingController get descriptionController =>
-      state.descriptionController;
-  // bool get onSunday => state.onSunday;
-  // bool get onMonday => state.onMonday;
-  // bool get onTuesday => state.onTuesday;
-  // bool get onWednesday => state.onWednesday;
-  // bool get onThursday => state.onThursday;
-  // bool get onFriday => state.onFriday;
-  // bool get onSaturday => state.onSaturday;
+  // TextEditingController get taskController => state.taskController;
+  // TextEditingController get descriptionController =>
+  // state.descriptionController;
   Box<dynamic> get tasksBox => state.tasksBox;
   String get day => state.day;
   Box<dynamic> get dbDay => state.dbDay;
   bool get isDispose => state.isDispose;
   List<Map<String, dynamic>> get tasksView => state.tasksView;
-  //////////
-  //setter//
-  //////////
+
   set onEvery(Set<Days> value) {
     emit(
-      DailyTasksModel(
-        tasksView: state.tasksView,
-        day: state.day,
-        onEvery: value,
-      ),
+      state.copyWith(onEvery: value),
     );
-  }
-
-  //////////////////////////////////////////////////////////////////////
-  //setter ini mungkin tidak akan diperlukan setelah kode dimodifikasi//
-  //////////////////////////////////////////////////////////////////////
-  set tasksView(List<Map<String, dynamic>> value) {
-    emit(
-        DailyTasksModel(tasksView: value, day: state.day, onEvery: state.onEvery
-            // onSunday: state.onSunday,
-            // onMonday: state.onMonday,
-            // onTuesday: state.onTuesday,
-            // onWednesday: state.onWednesday,
-            // onThursday: state.onThursday,
-            // onFriday: state.onFriday,
-            // onSaturday: state.onSaturday,
-            ));
-  }
-
-  set onSunday(bool value) {
-    emit(DailyTasksModel(
-        tasksView: state.tasksView, day: state.day, onEvery: state.onEvery
-        // onSunday: value,
-        // onMonday: state.onMonday,
-        // onTuesday: state.onTuesday,
-        // onWednesday: state.onWednesday,
-        // onThursday: state.onThursday,
-        // onFriday: state.onFriday,
-        // onSaturday: state.onSaturday,
-        ));
-  }
-
-  set onMonday(bool value) {
-    emit(DailyTasksModel(
-        tasksView: state.tasksView, day: state.day, onEvery: state.onEvery
-        // onSunday: state.onSunday,
-        // onMonday: value,
-        // onTuesday: state.onTuesday,
-        // onWednesday: state.onWednesday,
-        // onThursday: state.onThursday,
-        // onFriday: state.onFriday,
-        // onSaturday: state.onSaturday,
-        ));
-  }
-
-  set onTuesday(bool value) {
-    emit(DailyTasksModel(
-        tasksView: state.tasksView, day: state.day, onEvery: state.onEvery
-        // onSunday: state.onSunday,
-        // onMonday: state.onMonday,
-        // onTuesday: value,
-        // onWednesday: state.onWednesday,
-        // onThursday: state.onThursday,
-        // onFriday: state.onFriday,
-        // onSaturday: state.onSaturday,
-        ));
-  }
-
-  set onWednesday(bool value) {
-    emit(DailyTasksModel(
-        tasksView: state.tasksView, day: state.day, onEvery: state.onEvery
-        // onSunday: state.onSunday,
-        // onMonday: state.onMonday,
-        // onTuesday: state.onTuesday,
-        // onWednesday: value,
-        // onThursday: state.onThursday,
-        // onFriday: state.onFriday,
-        // onSaturday: state.onSaturday,
-        ));
-  }
-
-  set onThursday(bool value) {
-    emit(DailyTasksModel(
-        tasksView: state.tasksView, day: state.day, onEvery: state.onEvery
-        // onSunday: state.onSunday,
-        // onMonday: state.onMonday,
-        // onTuesday: state.onTuesday,
-        // onWednesday: state.onWednesday,
-        // onThursday: value,
-        // onFriday: state.onFriday,
-        // onSaturday: state.onSaturday,
-        ));
-  }
-
-  set onFriday(bool value) {
-    emit(DailyTasksModel(
-        tasksView: state.tasksView, day: state.day, onEvery: state.onEvery
-        // onSunday: state.onSunday,
-        // onMonday: state.onMonday,
-        // onTuesday: state.onTuesday,
-        // onWednesday: state.onWednesday,
-        // onThursday: state.onThursday,
-        // onFriday: value,
-        // onSaturday: state.onSaturday,
-        ));
-  }
-
-  set onSaturday(bool value) {
-    emit(DailyTasksModel(
-        tasksView: state.tasksView, day: state.day, onEvery: state.onEvery
-        // onSunday: state.onSunday,
-        // onMonday: state.onMonday,
-        // onTuesday: state.onTuesday,
-        // onWednesday: state.onWednesday,
-        // onThursday: state.onThursday,
-        // onFriday: state.onFriday,
-        // onSaturday: value,
-        ));
   }
 
   set isDispose(bool value) {
@@ -162,11 +42,6 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
         day: state.day,
         isDispose: value,
         onEvery: state.onEvery));
-  }
-
-  set day(String value) {
-    emit(DailyTasksModel(
-        tasksView: state.tasksView, day: value, onEvery: state.onEvery));
   }
 
   void refreshTasksView() {
@@ -190,11 +65,9 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
         .cast<Map<String, dynamic>>()
         .toList();
 
-    emit(DailyTasksModel(
-        tasksView: data.reversed.toList(),
-        day: state.day,
-        onEvery: state.onEvery));
-    emit(DailyTasksModel(
+    emit(state.copyWith(tasksView: data.reversed.toList()));
+    emit(
+      state.copyWith(
         tasksView: state.tasksView.where((element) {
           switch (state.day.toLowerCase()) {
             case 'sunday':
@@ -219,8 +92,8 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
               return element['saturday'];
           }
         }).toList(),
-        day: state.day,
-        onEvery: state.onEvery));
+      ),
+    );
 
     state.tasksView.sort((now, next) {
       var a = (now['status']) ? 1 : 0;
@@ -237,10 +110,7 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
         if (state.isDispose == true) {
           timer.cancel();
         } else {
-          emit(DailyTasksModel(
-              tasksView: state.tasksView,
-              day: DateFormat('EEEE').format(DateTime.now()),
-              onEvery: state.onEvery));
+          emit(state.copyWith(day: DateFormat('EEEE').format(DateTime.now())));
         }
       },
     );
@@ -274,9 +144,7 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
 
   void showTaskForm(
     int? itemKey,
-    BuildContext context,
-    // bool taskStatus,
-    [
+    BuildContext context, [
     String taskName = '',
     String description = '',
   ]) {
@@ -307,15 +175,26 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   TextField(
-                    maxLength: 13,
+                    maxLength: 30,
                     controller: taskController,
-                    decoration: const InputDecoration(label: Text('Task')),
+                    style:
+                        const TextStyle(color: Color.fromARGB(255, 23, 23, 23)),
+                    decoration: const InputDecoration(
+                        label: Text(
+                      'Task',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    )),
                   ),
                   TextField(
                     maxLength: 100,
                     controller: descriptionController,
-                    decoration:
-                        const InputDecoration(label: Text('Description')),
+                    style:
+                        const TextStyle(color: Color.fromARGB(255, 23, 23, 23)),
+                    decoration: const InputDecoration(
+                        label: Text(
+                      'Description',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    )),
                   ),
                   //tombol untuk user agar bisa memilih hari apa saja tugas dikerjakan
                   Row(
@@ -335,11 +214,22 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                                           : Colors.grey[300],
                                   value: state.onEvery.contains(Days.sunday),
                                   onChanged: () {
-                                    // state.onSunday = !state.onSunday;
-                                    emit(DailyTasksModel(
-                                        tasksView: state.tasksView,
-                                        day: state.day,
-                                        onEvery: state.onEvery));
+                                    //jika tombol sedang dalam kondisi mati, maka if dijalankan
+                                    if (state.onEvery.contains(Days.sunday) ==
+                                        false) {
+                                      emit(
+                                        state.copyWith(
+                                            onEvery: state.onEvery.toSet()
+                                              ..add(Days.sunday)),
+                                      );
+                                      //jika tombol sedang dalam kondisi menyala, maka else dijalankan
+                                    } else {
+                                      emit(
+                                        state.copyWith(
+                                            onEvery: state.onEvery.toSet()
+                                              ..remove(Days.sunday)),
+                                      );
+                                    }
                                     setState(() {});
                                   },
                                   buttonText: 'Sun'),
@@ -360,25 +250,20 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                                   value: state.onEvery.contains(Days.monday),
                                   onChanged: () {
                                     //jika tombol sedang dalam kondisi mati, maka if dijalankan
+                                    //jika tombol sedang dalam kondisi mati, maka if dijalankan
                                     if (state.onEvery.contains(Days.monday) ==
                                         false) {
                                       emit(
-                                        DailyTasksModel(
-                                          day: state.day,
-                                          tasksView: state.tasksView,
-                                          onEvery: state.onEvery.toSet()
-                                            ..add(Days.monday),
-                                        ),
+                                        state.copyWith(
+                                            onEvery: state.onEvery.toSet()
+                                              ..add(Days.monday)),
                                       );
                                       //jika tombol sedang dalam kondisi menyala, maka else dijalankan
                                     } else {
                                       emit(
-                                        DailyTasksModel(
-                                          day: state.day,
-                                          tasksView: state.tasksView,
-                                          onEvery: state.onEvery.toSet()
-                                            ..remove(Days.monday),
-                                        ),
+                                        state.copyWith(
+                                            onEvery: state.onEvery.toSet()
+                                              ..remove(Days.monday)),
                                       );
                                     }
                                     setState(() {});
@@ -404,22 +289,16 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                                     if (state.onEvery.contains(Days.tuesday) ==
                                         false) {
                                       emit(
-                                        DailyTasksModel(
-                                          day: state.day,
-                                          tasksView: state.tasksView,
-                                          onEvery: state.onEvery.toSet()
-                                            ..add(Days.tuesday),
-                                        ),
+                                        state.copyWith(
+                                            onEvery: state.onEvery.toSet()
+                                              ..add(Days.tuesday)),
                                       );
                                       //jika tombol sedang dalam kondisi menyala, maka else dijalankan
                                     } else {
                                       emit(
-                                        DailyTasksModel(
-                                          day: state.day,
-                                          tasksView: state.tasksView,
-                                          onEvery: state.onEvery.toSet()
-                                            ..remove(Days.tuesday),
-                                        ),
+                                        state.copyWith(
+                                            onEvery: state.onEvery.toSet()
+                                              ..remove(Days.tuesday)),
                                       );
                                     }
                                     setState(() {});
@@ -446,22 +325,16 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                                             .contains(Days.wednesday) ==
                                         false) {
                                       emit(
-                                        DailyTasksModel(
-                                          day: state.day,
-                                          tasksView: state.tasksView,
-                                          onEvery: state.onEvery.toSet()
-                                            ..add(Days.wednesday),
-                                        ),
+                                        state.copyWith(
+                                            onEvery: state.onEvery.toSet()
+                                              ..add(Days.wednesday)),
                                       );
                                       //jika tombol sedang dalam kondisi menyala, maka else dijalankan
                                     } else {
                                       emit(
-                                        DailyTasksModel(
-                                          day: state.day,
-                                          tasksView: state.tasksView,
-                                          onEvery: state.onEvery.toSet()
-                                            ..remove(Days.wednesday),
-                                        ),
+                                        state.copyWith(
+                                            onEvery: state.onEvery.toSet()
+                                              ..remove(Days.wednesday)),
                                       );
                                     }
                                     setState(() {});
@@ -487,22 +360,16 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                                     if (state.onEvery.contains(Days.thursday) ==
                                         false) {
                                       emit(
-                                        DailyTasksModel(
-                                          day: state.day,
-                                          tasksView: state.tasksView,
-                                          onEvery: state.onEvery.toSet()
-                                            ..add(Days.thursday),
-                                        ),
+                                        state.copyWith(
+                                            onEvery: state.onEvery.toSet()
+                                              ..add(Days.thursday)),
                                       );
                                       //jika tombol sedang dalam kondisi menyala, maka else dijalankan
                                     } else {
                                       emit(
-                                        DailyTasksModel(
-                                          day: state.day,
-                                          tasksView: state.tasksView,
-                                          onEvery: state.onEvery.toSet()
-                                            ..remove(Days.thursday),
-                                        ),
+                                        state.copyWith(
+                                            onEvery: state.onEvery.toSet()
+                                              ..remove(Days.thursday)),
                                       );
                                     }
                                     setState(() {});
@@ -528,22 +395,16 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                                     if (state.onEvery.contains(Days.friday) ==
                                         false) {
                                       emit(
-                                        DailyTasksModel(
-                                          day: state.day,
-                                          tasksView: state.tasksView,
-                                          onEvery: state.onEvery.toSet()
-                                            ..add(Days.friday),
-                                        ),
+                                        state.copyWith(
+                                            onEvery: state.onEvery.toSet()
+                                              ..add(Days.friday)),
                                       );
                                       //jika tombol sedang dalam kondisi menyala, maka else dijalankan
                                     } else {
                                       emit(
-                                        DailyTasksModel(
-                                          day: state.day,
-                                          tasksView: state.tasksView,
-                                          onEvery: state.onEvery.toSet()
-                                            ..remove(Days.friday),
-                                        ),
+                                        state.copyWith(
+                                            onEvery: state.onEvery.toSet()
+                                              ..remove(Days.friday)),
                                       );
                                     }
                                     setState(() {});
@@ -569,22 +430,16 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                                     if (state.onEvery.contains(Days.saturday) ==
                                         false) {
                                       emit(
-                                        DailyTasksModel(
-                                          day: state.day,
-                                          tasksView: state.tasksView,
-                                          onEvery: state.onEvery.toSet()
-                                            ..add(Days.saturday),
-                                        ),
+                                        state.copyWith(
+                                            onEvery: state.onEvery.toSet()
+                                              ..add(Days.saturday)),
                                       );
                                       //jika tombol sedang dalam kondisi menyala, maka else dijalankan
                                     } else {
                                       emit(
-                                        DailyTasksModel(
-                                          day: state.day,
-                                          tasksView: state.tasksView,
-                                          onEvery: state.onEvery.toSet()
-                                            ..remove(Days.saturday),
-                                        ),
+                                        state.copyWith(
+                                            onEvery: state.onEvery.toSet()
+                                              ..remove(Days.saturday)),
                                       );
                                     }
                                     setState(() {});
@@ -598,7 +453,8 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                     padding: const EdgeInsets.only(top: 7),
                     child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.cyan[700],
+                          backgroundColor:
+                              const Color.fromARGB(255, 68, 68, 68),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(3),
                           ),
@@ -654,7 +510,9 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                             Navigator.pop(context);
                           }
                         },
-                        child: const Text('Edit')),
+                        child: const Text('Edit',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 238, 238, 238)))),
                   )
                 ],
               ),

@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:garap/bloc/timer_cubit.dart';
-import 'package:garap/model/timer_model.dart';
+import 'package:garap/bloc/restwork_timer_cubit.dart';
+import 'package:garap/model/restwork_timer_model.dart';
 import 'package:intl/intl.dart';
 
 //palet warna
@@ -194,7 +194,6 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
               child: BlocBuilder<TimerCubit, TimerModel>(
                   bloc: provider,
                   builder: (context, state) {
-                    print('valuelistenablebuilder');
                     return Text(
                       provider.status,
                       style: const TextStyle(
@@ -438,19 +437,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                           backgroundColor:
                               const Color.fromARGB(255, 238, 238, 238),
                           onPressed: () {
-                            if (provider.isTimerIncrease == true &&
-                                provider.isTimerDecrease == false) {
-                              provider.setBreakTime();
-                              provider.isTimerIncrease = true;
-                              provider.isTimerDecrease = false;
-                              provider.isTimerPause = false;
-                              provider.isTimerDecrease = true;
-                              provider.isTimerIncrease = false;
-                              provider.status = 'BreakingTime';
-                            }
-                            setState(() {
-                              iconController.forward();
-                            });
+                            provider.breakButton();
                           },
                           child: const Icon(
                             Icons.free_breakfast,
@@ -475,11 +462,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                           });
                           //jika timer pertama kali di mulai atau selesai di reset
                           if (provider.isTimerRun == false) {
-                            provider.isTimerRun = true;
-                            provider.isTimerIncrease = true;
-                            provider.isTimerDecrease = false;
-                            provider.isTimerPause = false;
-                            provider.status = 'Working Time';
+                            provider.playPauseButton();
                             setState(
                               () {
                                 iconController.forward();
@@ -490,8 +473,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                               (provider.isTimerIncrease == false &&
                                   provider.isTimerDecrease == true) &&
                               provider.isTimerPause == false) {
-                            provider.isTimerPause = true;
-                            provider.status = 'Paused';
+                            provider.playPauseButton();
                             setState(
                               () {
                                 iconController.reverse();
@@ -502,8 +484,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                               (provider.isTimerIncrease == true &&
                                   provider.isTimerDecrease == false) &&
                               provider.isTimerPause == false) {
-                            provider.isTimerPause = true;
-                            provider.status = 'Paused';
+                            provider.playPauseButton();
                             setState(
                               () {
                                 iconController.reverse();
@@ -514,8 +495,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                               (provider.isTimerIncrease == false &&
                                   provider.isTimerDecrease == true) &&
                               provider.isTimerPause == true) {
-                            provider.isTimerPause = false;
-                            provider.status = 'Breaking Time';
+                            provider.playPauseButton();
                             setState(() {
                               iconController.forward();
                             });
@@ -524,8 +504,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                               (provider.isTimerIncrease == true &&
                                   provider.isTimerDecrease == false) &&
                               provider.isTimerPause == true) {
-                            provider.isTimerPause = false;
-                            provider.status = 'Working Time';
+                            provider.playPauseButton();
                             setState(() {
                               iconController.forward();
                             });
@@ -563,14 +542,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                           backgroundColor:
                               const Color.fromARGB(255, 238, 238, 238),
                           onPressed: () {
-                            provider.isTimerRun = false;
-                            provider.isTimerIncrease = false;
-                            provider.isTimerDecrease = false;
-                            provider.isTimerPause = false;
-                            provider.status = 'Idle';
-                            provider.timerSeconds = 0;
-                            provider.timerMinutes = 0;
-                            provider.timerHours = 0;
+                            provider.resetButton();
                             setState(
                               () {
                                 iconController.reverse();

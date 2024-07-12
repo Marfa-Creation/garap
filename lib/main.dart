@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:garap/bloc/onetime_tasks_cubit.dart';
-import 'package:garap/bloc/timer_cubit.dart';
+import 'package:garap/bloc/restwork_timer_cubit.dart';
 import 'package:garap/view/main_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
