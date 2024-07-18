@@ -100,10 +100,11 @@ class _MainPageState extends State<MainPage>
                       ),
                       onTap: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const OneTimeTasksView()));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const OneTimeTasksView(),
+                          ),
+                        );
                       },
                     ),
                   ],
@@ -125,10 +126,11 @@ class _MainPageState extends State<MainPage>
                       ),
                       onTap: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const RestworkTimerView()));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RestworkTimerView(),
+                          ),
+                        );
                       },
                     ),
                     const SizedBox(width: 20),

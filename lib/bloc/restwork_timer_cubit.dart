@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:garap/model/restwork_timer_model.dart';
 
-class TimerCubit extends Cubit<TimerModel> {
-  TimerCubit()
+class RestworkTimerCubit extends Cubit<RestworkTimerModel> {
+  RestworkTimerCubit()
       : super(
-          const TimerModel(
+          const RestworkTimerModel(
             timerSeconds: 0,
             timerMinutes: 0,
             timerHours: 0,
@@ -65,6 +65,17 @@ class TimerCubit extends Cubit<TimerModel> {
   //////////
   //method//
   //////////
+
+  //
+  void bugTesting() {
+    emit(
+      state.copyWith(
+        timerSeconds: 55,
+        timerMinutes: 59,
+        timerHours: 23,
+      ),
+    );
+  }
 
   void playPauseButton() {
     //jika timer pertama kali di mulai atau selesai di reset
@@ -146,13 +157,23 @@ class TimerCubit extends Cubit<TimerModel> {
     );
   }
 
-  void increaseTime() {
+  void increaseTime(void Function() resetController, BuildContext context) {
     final AudioPlayer tickSound = AudioPlayer();
     Timer.periodic(const Duration(seconds: 1), (timer) {
       //cancel timer
       if (state.isDispose == true) {
         timer.cancel();
       }
+
+      if (state.timerHours >= 24) {
+        askForReset(context).whenComplete(
+          () {
+            resetButton();
+            resetController();
+          },
+        );
+      }
+
       //increase timer
       if (state.isTimerIncrease == true &&
           state.isTimerDecrease == false &&
@@ -184,6 +205,46 @@ class TimerCubit extends Cubit<TimerModel> {
     });
   }
 
+  Future<void> askForReset(BuildContext context) async {
+    if (context.mounted) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: GestureDetector(
+              onTap: () {
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
+              },
+              child: Container(
+                width: MediaQuery.sizeOf(context).width * 1 / 2,
+                height: 200,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 23, 23, 23),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Center(
+                  child: Text(
+                    'Did you forget about your timer? we\'ll reset it for you.',
+                    maxLines: 4,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 238, 238, 238),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    }
+  }
+
   void decreaseTime(BuildContext context) {
     final AudioPlayer tickSound = AudioPlayer();
     Timer.periodic(
@@ -204,36 +265,39 @@ class TimerCubit extends Cubit<TimerModel> {
               state.timerSeconds == 0) {
             _playAlarm(context);
           }
-          //untuk mengurangi nilai detik
+          //jika kondisi terpenuhi, maka akan mulai mengurangi nilai antara detik, menit, dan jam
           if (state.timerSeconds > 0 ||
               state.timerMinutes > 0 ||
               state.timerHours > 0) {
+            //bunyikan suara detik jam jika user meminta
             if (state.audioMode == true) {
               tickSound.play(AssetSource('tick_sound.mp3'));
             }
+
+            //kurangi nilai detik
             emit(
               state.copyWith(
                 timerSeconds: state.timerSeconds - 1,
               ),
             );
-          }
-          //untuk mengurangi nilai menit
-          if (state.timerSeconds < 0) {
-            emit(
-              state.copyWith(
-                timerSeconds: 59,
-                timerMinutes: state.timerMinutes - 1,
-              ),
-            );
-          }
-          //untuk mengurangi nilai jam
-          if (state.timerMinutes < 0) {
-            emit(
-              state.copyWith(
-                timerMinutes: 59,
-                timerHours: state.timerHours - 1,
-              ),
-            );
+            //untuk mengurangi nilai menit dan set nilai detik ke `59`
+            if (state.timerSeconds < 0) {
+              emit(
+                state.copyWith(
+                  timerSeconds: 59,
+                  timerMinutes: state.timerMinutes - 1,
+                ),
+              );
+            }
+            //untuk mengurangi nilai jam dan set nilai menit ke `59`
+            if (state.timerMinutes < 0) {
+              emit(
+                state.copyWith(
+                  timerMinutes: 59,
+                  timerHours: state.timerHours - 1,
+                ),
+              );
+            }
           }
         }
       },
@@ -244,20 +308,22 @@ class TimerCubit extends Cubit<TimerModel> {
     double hours = state.timerHours.toDouble();
     double minutes = state.timerMinutes.toDouble();
     double seconds = state.timerSeconds.toDouble();
+    double totalSeconds = 0;
 
-    minutes += hours * 60;
-    seconds += minutes * 60;
+    totalSeconds += hours * 60 * 60;
+    totalSeconds += minutes * 60;
+    totalSeconds += seconds;
+    totalSeconds /= state.breakRatio;
 
-    seconds /= state.breakRatio;
-
-    minutes = seconds / 60;
-    hours = minutes / 60;
-
+    double convertedHours = (totalSeconds / 3600);
+    double convertedMinutes = (convertedHours - convertedHours.toInt()) * 60;
+    double convertedSeconds =
+        (convertedMinutes - convertedMinutes.toInt()) * 60;
     emit(
       state.copyWith(
-        timerSeconds: (seconds % 60).toInt(),
-        timerMinutes: minutes.toInt(),
-        timerHours: hours.toInt(),
+        timerSeconds: convertedSeconds.toInt(),
+        timerMinutes: convertedMinutes.toInt(),
+        timerHours: convertedHours.toInt(),
       ),
     );
   }

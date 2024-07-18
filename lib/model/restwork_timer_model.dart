@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 @immutable
-class TimerModel {
+class RestworkTimerModel {
   ///////////////
   //constructor//
   ///////////////
-  const TimerModel({
+  const RestworkTimerModel({
     required this.timerSeconds,
     required this.timerMinutes,
     required this.timerHours,
@@ -34,7 +34,7 @@ class TimerModel {
   final bool audioMode;
   final String status;
 
-  TimerModel copyWith({
+  RestworkTimerModel copyWith({
     int? timerSeconds,
     int? timerMinutes,
     int? timerHours,
@@ -47,7 +47,7 @@ class TimerModel {
     bool? audioMode,
     String? status,
   }) {
-    return TimerModel(
+    return RestworkTimerModel(
       timerSeconds: timerSeconds ?? this.timerSeconds,
       timerMinutes: timerMinutes ?? this.timerMinutes,
       timerHours: timerHours ?? this.timerHours,

@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:garap/bloc/onetime_tasks_cubit.dart';
-import 'package:garap/bloc/restwork_timer_cubit.dart';
 import 'package:garap/view/main_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -31,21 +28,13 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => TimerCubit(),
-        ),
-        BlocProvider(create: (context) => OnetimeTasksCubit()),
-      ],
-      child: MaterialApp(
-        theme: ThemeData(
-          scaffoldBackgroundColor: const Color.fromARGB(255, 68, 68, 68),
-        ),
-        debugShowCheckedModeBanner: false,
-        title: 'Garap',
-        home: const MainPage(),
+    return MaterialApp(
+      theme: ThemeData(
+        scaffoldBackgroundColor: const Color.fromARGB(255, 68, 68, 68),
       ),
+      debugShowCheckedModeBanner: false,
+      title: 'Garap',
+      home: const MainPage(),
     );
   }
 }

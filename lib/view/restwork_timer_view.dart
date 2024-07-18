@@ -28,7 +28,23 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
   @override
   initState() {
     provider.isDispose = false;
-    provider.increaseTime();
+    provider.increaseTime(
+      () {
+        setState(
+          () {
+            iconController.reverse();
+            visibilityController.reverse().whenComplete(
+                  () => setState(
+                    () {
+                      isVisible = false;
+                    },
+                  ),
+                );
+          },
+        );
+      },
+      context,
+    );
     provider.decreaseTime(context);
     iconController = AnimationController(
       vsync: this,
@@ -49,8 +65,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
   ////////////
   //Variable//
   ////////////
-  final TimerCubit provider = TimerCubit();
-  final ValueNotifier<bool> valueNotifier = ValueNotifier<bool>(true);
+  final RestworkTimerCubit provider = RestworkTimerCubit();
   bool isVisible = false;
   late AnimationController iconController;
   late AnimationController visibilityController;
@@ -169,12 +184,11 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
           ),
         ),
         actions: [
-          ValueListenableBuilder<bool>(
-            valueListenable: valueNotifier,
-            builder: (context, boolean, widget) => IconButton(
+          BlocBuilder<RestworkTimerCubit, RestworkTimerModel>(
+            bloc: provider,
+            builder: (context, state) => IconButton(
               onPressed: () {
                 provider.audioMode = !provider.audioMode;
-                valueNotifier.value = provider.audioMode;
               },
               icon: Icon((provider.audioMode == true)
                   ? Icons.volume_up
@@ -191,7 +205,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
             //Display status
             Padding(
               padding: const EdgeInsets.only(bottom: 20),
-              child: BlocBuilder<TimerCubit, TimerModel>(
+              child: BlocBuilder<RestworkTimerCubit, RestworkTimerModel>(
                   bloc: provider,
                   builder: (context, state) {
                     return Text(
@@ -217,7 +231,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                     color: const Color.fromARGB(255, 23, 23, 23),
                   ),
                   child: Center(
-                    child: BlocBuilder<TimerCubit, TimerModel>(
+                    child: BlocBuilder<RestworkTimerCubit, RestworkTimerModel>(
                       bloc: provider,
                       builder: (context, state) => Text(
                           NumberFormat('00').format(provider.timerHours),
@@ -238,7 +252,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                     color: const Color.fromARGB(255, 23, 23, 23),
                   ),
                   child: Center(
-                    child: BlocBuilder<TimerCubit, TimerModel>(
+                    child: BlocBuilder<RestworkTimerCubit, RestworkTimerModel>(
                       bloc: provider,
                       builder: (context, state) => Text(
                           NumberFormat('00').format(provider.timerMinutes),
@@ -259,7 +273,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                     color: const Color.fromARGB(255, 23, 23, 23),
                   ),
                   child: Center(
-                    child: BlocBuilder<TimerCubit, TimerModel>(
+                    child: BlocBuilder<RestworkTimerCubit, RestworkTimerModel>(
                       bloc: provider,
                       builder: (context, state) => Text(
                         NumberFormat('00').format(provider.timerSeconds),
@@ -337,7 +351,8 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                       color: const Color.fromARGB(255, 23, 23, 23),
                     ),
                     child: Center(
-                      child: BlocBuilder<TimerCubit, TimerModel>(
+                      child:
+                          BlocBuilder<RestworkTimerCubit, RestworkTimerModel>(
                         bloc: provider,
                         builder: (context, state) => Text(
                           provider.breakRatio.toString(),
@@ -360,7 +375,8 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                               border:
                                   Border.all(color: Colors.black, width: 0.5)),
                           child: Material(
-                            child: BlocBuilder<TimerCubit, TimerModel>(
+                            child: BlocBuilder<RestworkTimerCubit,
+                                RestworkTimerModel>(
                               bloc: provider,
                               builder: (context, state) => InkWell(
                                 onTap: (provider.breakRatio < 10)
@@ -384,7 +400,8 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                             border:
                                 Border.all(color: Colors.black, width: 0.5)),
                         child: Material(
-                          child: BlocBuilder<TimerCubit, TimerModel>(
+                          child: BlocBuilder<RestworkTimerCubit,
+                              RestworkTimerModel>(
                             bloc: provider,
                             builder: (context, state) => InkWell(
                               onTap: (provider.breakRatio > 1)
@@ -430,10 +447,11 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                           duration: Duration(milliseconds: 300),
                         )
                       ],
-                      child: BlocBuilder<TimerCubit, TimerModel>(
+                      child:
+                          BlocBuilder<RestworkTimerCubit, RestworkTimerModel>(
                         bloc: provider,
                         builder: (context, state) => FloatingActionButton(
-                          heroTag: 'c',
+                          // heroTag: 'c',
                           backgroundColor:
                               const Color.fromARGB(255, 238, 238, 238),
                           onPressed: () {
@@ -451,9 +469,10 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                   //switch play/pause timer
                   Padding(
                     padding: const EdgeInsets.only(left: 15, right: 15),
-                    child: BlocBuilder<TimerCubit, TimerModel>(
+                    child: BlocBuilder<RestworkTimerCubit, RestworkTimerModel>(
+                      bloc: provider,
                       builder: (context, state) => FloatingActionButton(
-                        heroTag: 'a',
+                        // heroTag: 'a',
                         backgroundColor:
                             const Color.fromARGB(255, 238, 238, 238),
                         onPressed: () {
@@ -535,7 +554,8 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                           duration: Duration(milliseconds: 300),
                         ),
                       ],
-                      child: BlocBuilder<TimerCubit, TimerModel>(
+                      child:
+                          BlocBuilder<RestworkTimerCubit, RestworkTimerModel>(
                         bloc: provider,
                         builder: (context, state) => FloatingActionButton(
                           heroTag: 'b',

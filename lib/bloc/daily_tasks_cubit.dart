@@ -21,9 +21,6 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
   //////////
   //getter//
   //////////
-  // TextEditingController get taskController => state.taskController;
-  // TextEditingController get descriptionController =>
-  // state.descriptionController;
   Box<dynamic> get tasksBox => state.tasksBox;
   String get day => state.day;
   Box<dynamic> get dbDay => state.dbDay;
@@ -250,7 +247,6 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                                   value: state.onEvery.contains(Days.monday),
                                   onChanged: () {
                                     //jika tombol sedang dalam kondisi mati, maka if dijalankan
-                                    //jika tombol sedang dalam kondisi mati, maka if dijalankan
                                     if (state.onEvery.contains(Days.monday) ==
                                         false) {
                                       emit(
@@ -444,7 +440,7 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
                                     }
                                     setState(() {});
                                   },
-                                  buttonText: 'Sat'),
+                                  buttonText: 'Sat',),
                         ),
                       ),
                     ],
