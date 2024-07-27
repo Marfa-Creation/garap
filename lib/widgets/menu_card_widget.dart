@@ -2,19 +2,22 @@ import 'package:flutter/material.dart';
 
 class MenuCardWidget extends StatelessWidget {
   const MenuCardWidget({
+    this.gradient,
     this.onTap,
-    this.color = Colors.white,
-    this.icon = const Icon(Icons.question_mark_outlined, size: 100),
-    this.text = const Text(
-      'Soon',
-      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+    this.color = const Color.fromARGB(255, 64, 65, 75),
+    this.icon = const Icon(
+      Icons.question_mark_outlined,
+      size: 100,
+      color: Color.fromARGB(255, 255, 255, 255),
     ),
+    this.text = 'Soon',
     super.key,
   });
 
   final Icon icon;
-  final Text text;
+  final String text;
   final Color color;
+  final Gradient? gradient;
   final void Function()? onTap;
 
   @override
@@ -23,12 +26,14 @@ class MenuCardWidget extends StatelessWidget {
       child: Container(
         height: 200,
         decoration: BoxDecoration(
-            color: color, borderRadius: BorderRadius.circular(20)),
+            color: color,
+            borderRadius: BorderRadius.circular(10),
+            gradient: gradient),
         child: Material(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(10),
           color: Colors.transparent,
           child: InkWell(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(10),
             onTap: () {
               if (onTap != null) onTap!();
             },
@@ -39,7 +44,14 @@ class MenuCardWidget extends StatelessWidget {
                   Center(child: icon),
                   Padding(
                     padding: const EdgeInsets.only(top: 20, bottom: 15),
-                    child: text,
+                    child: Text(
+                      text,
+                      style: const TextStyle(
+                        color: Color.fromARGB(255, 255, 255, 255),
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
               ),

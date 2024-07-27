@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 class MiniSwitchButtonWidget extends StatelessWidget {
   const MiniSwitchButtonWidget(
       {super.key,
-      required this.value,
-      required this.onChanged,
+      required this.onPressed,
       required this.buttonColor,
       this.buttonText});
 
-  final void Function() onChanged;
-  final bool value;
+  final void Function() onPressed;
   final Color? buttonColor;
   final String? buttonText;
 
@@ -27,7 +25,7 @@ class MiniSwitchButtonWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         child: InkWell(
           borderRadius: BorderRadius.circular(10),
-          onTap: onChanged,
+          onTap: onPressed,
           child: Center(
             child: Text(
               buttonText ?? '',

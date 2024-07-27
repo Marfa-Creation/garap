@@ -77,7 +77,10 @@ class RestworkTimerCubit extends Cubit<RestworkTimerModel> {
     );
   }
 
-  void playPauseButton() {
+  void playPauseButton(
+    void Function() forwardController,
+    void Function() reverseController,
+  ) {
     //jika timer pertama kali di mulai atau selesai di reset
     if (state.isTimerRun == false) {
       emit(
@@ -89,6 +92,8 @@ class RestworkTimerCubit extends Cubit<RestworkTimerModel> {
           status: 'Working Time',
         ),
       );
+      forwardController();
+      //jika timer sedang mengurangi angka dan kondisi tidak di pause
     } else if (state.isTimerRun == true &&
         (state.isTimerIncrease == false && state.isTimerDecrease == true) &&
         state.isTimerPause == false) {
@@ -98,6 +103,8 @@ class RestworkTimerCubit extends Cubit<RestworkTimerModel> {
           status: 'Paused',
         ),
       );
+      reverseController();
+      //jika timer sedang menambah angka dan kondisi tidak di pause
     } else if (state.isTimerRun == true &&
         (state.isTimerIncrease == true && state.isTimerDecrease == false) &&
         state.isTimerPause == false) {
@@ -107,6 +114,8 @@ class RestworkTimerCubit extends Cubit<RestworkTimerModel> {
           status: 'Paused',
         ),
       );
+      reverseController();
+      //jika timer sedang mengurangi angka dan kondisi di pause
     } else if (state.isTimerRun == true &&
         (state.isTimerIncrease == false && state.isTimerDecrease == true) &&
         state.isTimerPause == true) {
@@ -116,6 +125,8 @@ class RestworkTimerCubit extends Cubit<RestworkTimerModel> {
           status: 'Breaking Time',
         ),
       );
+      forwardController();
+      //jika timer sedang menambah angka dan kondisi di pause
     } else if (state.isTimerRun == true &&
         (state.isTimerIncrease == true && state.isTimerDecrease == false) &&
         state.isTimerPause == true) {
@@ -125,6 +136,8 @@ class RestworkTimerCubit extends Cubit<RestworkTimerModel> {
           status: 'Working Time',
         ),
       );
+      forwardController();
+      //jika else berjalan, maka ada kesalahan logika
     } else {}
   }
 
@@ -157,7 +170,11 @@ class RestworkTimerCubit extends Cubit<RestworkTimerModel> {
     );
   }
 
-  void increaseTime(void Function() resetController, BuildContext context) {
+  void increaseTime(
+    BuildContext context,
+    void Function() resetAnimationController,
+    Dialog overtimeView,
+  ) {
     final AudioPlayer tickSound = AudioPlayer();
     Timer.periodic(const Duration(seconds: 1), (timer) {
       //cancel timer
@@ -166,10 +183,15 @@ class RestworkTimerCubit extends Cubit<RestworkTimerModel> {
       }
 
       if (state.timerHours >= 24) {
-        askForReset(context).whenComplete(
+        resetButton();
+        showDialog(
+          context: context,
+          builder: (context) {
+            return overtimeView;
+          },
+        ).whenComplete(
           () {
-            resetButton();
-            resetController();
+            resetAnimationController();
           },
         );
       }
@@ -205,47 +227,7 @@ class RestworkTimerCubit extends Cubit<RestworkTimerModel> {
     });
   }
 
-  Future<void> askForReset(BuildContext context) async {
-    if (context.mounted) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return Dialog(
-            backgroundColor: Colors.transparent,
-            child: GestureDetector(
-              onTap: () {
-                if (context.mounted) {
-                  Navigator.pop(context);
-                }
-              },
-              child: Container(
-                width: MediaQuery.sizeOf(context).width * 1 / 2,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 23, 23, 23),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Did you forget about your timer? we\'ll reset it for you.',
-                    maxLines: 4,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 238, 238, 238),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      );
-    }
-  }
-
-  void decreaseTime(BuildContext context) {
+  void decreaseTime(BuildContext context, Widget endTimeView) {
     final AudioPlayer tickSound = AudioPlayer();
     Timer.periodic(
       const Duration(seconds: 1),
@@ -263,7 +245,7 @@ class RestworkTimerCubit extends Cubit<RestworkTimerModel> {
           if (state.timerHours == 0 &&
               state.timerMinutes == 0 &&
               state.timerSeconds == 0) {
-            _playAlarm(context);
+            _playAlarm(context, endTimeView);
           }
           //jika kondisi terpenuhi, maka akan mulai mengurangi nilai antara detik, menit, dan jam
           if (state.timerSeconds > 0 ||
@@ -328,7 +310,7 @@ class RestworkTimerCubit extends Cubit<RestworkTimerModel> {
     );
   }
 
-  void _playAlarm(BuildContext context) {
+  void _playAlarm(BuildContext context, Widget endTimeView) {
     final AudioPlayer timeEndSound = AudioPlayer();
     if (state.isTimerRun == true &&
         (state.isTimerIncrease == false || state.isTimerDecrease == true) &&
@@ -346,32 +328,7 @@ class RestworkTimerCubit extends Cubit<RestworkTimerModel> {
         backgroundColor: Colors.transparent,
         context: context,
         builder: (context) {
-          return Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 238, 238, 238),
-                border: Border.all(
-                  color: const Color.fromARGB(255, 23, 23, 23),
-                  width: 0.5,
-                )),
-            child: Material(
-              child: InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: const Center(
-                  child: Text(
-                    'Break Time is Over',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
+          return endTimeView;
         },
       ).whenComplete(
         () {

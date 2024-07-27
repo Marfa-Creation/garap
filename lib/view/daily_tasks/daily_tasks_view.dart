@@ -11,13 +11,12 @@ class DailyTasksView extends StatefulWidget {
 
 class _DailyTasksViewState extends State<DailyTasksView> {
   DailyTasksCubit provider = DailyTasksCubit();
-
+  GlobalKey globalKey = GlobalKey();
   ////////////
   //override//
   ////////////
   @override
   initState() {
-    provider.isDispose = false;
     provider.updateDay();
     if (provider.day != provider.dbDay.get('day_box') &&
         provider.tasksBox.length > 0) {
@@ -51,10 +50,6 @@ class _DailyTasksViewState extends State<DailyTasksView> {
     provider.isDispose = true;
     super.dispose();
   }
-
-  //////////
-  //Method//
-  //////////
 
   @override
   Widget build(BuildContext context) {
@@ -98,37 +93,55 @@ class _DailyTasksViewState extends State<DailyTasksView> {
         builder: (context, snaphots) => ListView.builder(
           itemCount: provider.tasksView.length,
           itemBuilder: (context, index) {
-            var currentTask = provider.tasksView[index];
-            return Card(
-              child: CheckboxListTile(
-                value: currentTask['status'],
-                onChanged: (value) async {
-                  await provider.editTask(
-                    currentTask['key'],
-                    {
-                      'status': !currentTask['status'],
-                      'task': currentTask['task'],
-                      'description': currentTask['description'],
-                      'sunday': currentTask['sunday'],
-                      'monday': currentTask['monday'],
-                      'tuesday': currentTask['tuesday'],
-                      'wednesday': currentTask['wednesday'],
-                      'thursday': currentTask['thursday'],
-                      'friday': currentTask['friday'],
-                      'saturday': currentTask['saturday'],
-                    },
-                  );
-                },
-                title: Text(currentTask['task']),
-                subtitle: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(' - ${currentTask['description']}'),
-                    Text(
-                        'status: ${(currentTask['status'] ? 'Complete' : 'Uncomplete')}')
-                  ],
-                ),
+            Map<String, dynamic> currentTask = provider.tasksView[index];
+            return StatefulBuilder(
+              builder: (context, setState) => Stack(
+                children: [
+                  Positioned.fill(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final width = constraints.maxWidth;
+                        final height = constraints.maxHeight;
+
+                        return Align(
+                          alignment: Alignment.centerLeft,
+                          child: AnimatedContainer(
+                            margin: const EdgeInsets.all(2.5),
+                            duration: const Duration(milliseconds: 300),
+                            width: (currentTask['status']) ? width : 0,
+                            height: height,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: const Color.fromARGB(255, 79, 249, 113),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 238, 238, 238),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: CheckboxListTile(
+                      activeColor: const Color.fromARGB(255, 79, 249, 113),
+                      checkColor: const Color.fromARGB(255, 238, 238, 238),
+                      value: currentTask['status'],
+                      onChanged: (value) async {
+                        provider.switchTaskStatus(currentTask);
+                      },
+                      title: Text(currentTask['task']),
+                      subtitle: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(' - ${currentTask['description']}'),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             );
           },

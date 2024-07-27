@@ -51,8 +51,12 @@ class _MainPageState extends State<MainPage>
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 23, 23, 23),
-        title: const Text('Garap',
-            style: TextStyle(color: Color.fromARGB(255, 238, 238, 238))),
+        title: const Text(
+          'Garap',
+          style: TextStyle(
+              color: Color.fromARGB(255, 238, 238, 238),
+              fontWeight: FontWeight.bold),
+        ),
       ),
       body: RawScrollbar(
         thumbVisibility: false,
@@ -68,15 +72,11 @@ class _MainPageState extends State<MainPage>
                   children: [
                     //MenuCardWidget untuk menuju ke `DailyTasksView`
                     MenuCardWidget(
-                      color: Colors.red,
-                      text: const Text(
-                        'Daily Tasks',
-                        style: TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold),
-                      ),
+                      text: 'Daily Tasks',
                       icon: const Icon(
                         Icons.event_available,
                         size: 100,
+                        color: Color.fromARGB(255, 255, 255, 255),
                       ),
                       onTap: () {
                         Navigator.push(
@@ -88,15 +88,12 @@ class _MainPageState extends State<MainPage>
                     const SizedBox(width: 20),
                     //MenuCardWidget untuk menuju ke `OnetimeTasksView`
                     MenuCardWidget(
-                      color: Colors.red,
-                      text: const Text(
-                        'Onetime Tasks',
-                        style: TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold),
-                      ),
+                      // color: Colors.red,
+                      text: 'Onetime Tasks',
                       icon: const Icon(
                         Icons.event,
                         size: 100,
+                        color: Color.fromARGB(255, 255, 255, 255),
                       ),
                       onTap: () {
                         Navigator.push(
@@ -114,15 +111,18 @@ class _MainPageState extends State<MainPage>
                   children: [
                     //MenuCardWidget untuk menuju ke`TimerView`
                     MenuCardWidget(
-                      color: Colors.green,
-                      text: const Text(
-                        'Restwork Timer',
-                        style: TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold),
-                      ),
+                      // gradient: const LinearGradient(
+                      //   begin: Alignment.topLeft,
+                      //   end: Alignment.bottomRight,
+                      //   colors: [
+                      //   Color.fromARGB(255, 28, 80, 223),
+                      //   Color.fromARGB(255, 196, 18, 220),
+                      // ]),
+                      text: 'Restwork Timer',
                       icon: const Icon(
                         Icons.timer,
                         size: 100,
+                        color: Color.fromARGB(255, 255, 255, 255),
                       ),
                       onTap: () {
                         Navigator.push(

@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        scaffoldBackgroundColor: const Color.fromARGB(255, 68, 68, 68),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 28, 32, 37),
       ),
       debugShowCheckedModeBanner: false,
       title: 'Garap',

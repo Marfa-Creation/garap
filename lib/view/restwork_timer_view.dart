@@ -6,11 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:garap/bloc/restwork_timer_cubit.dart';
 import 'package:garap/model/restwork_timer_model.dart';
 import 'package:intl/intl.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 //palet warna
-//putih: Color.fromARGB(255, 238, 238, 238)
+//putih: Color.fromARGB(255, 255, 255, 255)
 //hitam: Color.fromARGB(255, 23, 23, 23)
 //abuAbu: Color.fromARGB(255, 68, 68, 68)
+//abuAbu1 : 76, 85, 92(RGB)
 
 class RestworkTimerView extends StatefulWidget {
   const RestworkTimerView({super.key});
@@ -29,6 +31,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
   initState() {
     provider.isDispose = false;
     provider.increaseTime(
+      context,
       () {
         setState(
           () {
@@ -43,9 +46,67 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
           },
         );
       },
-      context,
+      Dialog(
+        backgroundColor: Colors.transparent,
+        child: GestureDetector(
+          onTap: () {
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
+          },
+          child: Container(
+            width: 300,
+            height: 200,
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 23, 23, 23),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Center(
+              child: Text(
+                'Did you forget about your timer?\nwe\'ll reset it for you.',
+                maxLines: 4,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Color.fromARGB(255, 238, 238, 238),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
-    provider.decreaseTime(context);
+    provider.decreaseTime(
+      context,
+      Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 238, 238, 238),
+          border: Border.all(
+            color: const Color.fromARGB(255, 23, 23, 23),
+            width: 0.5,
+          ),
+        ),
+        child: Material(
+          child: InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: const Center(
+              child: Text(
+                'Break Time is Over',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
     iconController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
@@ -56,6 +117,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
 
   @override
   void dispose() {
+    WakelockPlus.disable();
     provider.isDispose = true;
     iconController.dispose();
     visibilityController.dispose();
@@ -83,7 +145,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
             width: MediaQuery.sizeOf(context).width * 1 / 2,
             height: 200,
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 23, 23, 23),
+              color: const Color.fromARGB(255, 64, 65, 75),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Center(
@@ -94,7 +156,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                     'The timer is still running!\nare you sure to go back?',
                     maxLines: 3,
                     style: TextStyle(
-                      color: Color.fromARGB(255, 238, 238, 238),
+                      color: Color.fromARGB(255, 255, 255, 255),
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
@@ -112,7 +174,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                           },
                           icon: const Icon(
                             Icons.check,
-                            color: Colors.green,
+                            color: Color.fromARGB(255, 79, 249, 113),
                           ),
                         ),
                       ),
@@ -143,6 +205,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
 
   @override
   Widget build(BuildContext context) {
+    WakelockPlus.enable();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 23, 23, 23),
@@ -172,7 +235,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
             },
             icon: const Icon(
               Icons.arrow_back,
-              color: Color.fromARGB(255, 238, 238, 238),
+              color: Color.fromARGB(255, 255, 255, 255),
             ),
           ),
         ),
@@ -180,7 +243,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
           'Restwork Timer',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 238, 238, 238),
+            color: Color.fromARGB(255, 255, 255, 255),
           ),
         ),
         actions: [
@@ -188,12 +251,13 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
             bloc: provider,
             builder: (context, state) => IconButton(
               onPressed: () {
+                provider.bugTesting();
                 provider.audioMode = !provider.audioMode;
               },
               icon: Icon((provider.audioMode == true)
                   ? Icons.volume_up
                   : Icons.volume_off),
-              color: const Color.fromARGB(255, 238, 238, 238),
+              color: const Color.fromARGB(255, 255, 255, 255),
             ),
           ),
         ],
@@ -211,7 +275,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                     return Text(
                       provider.status,
                       style: const TextStyle(
-                          color: Color.fromARGB(255, 238, 238, 238),
+                          color: Color.fromARGB(255, 255, 255, 255),
                           fontSize: 25,
                           fontWeight: FontWeight.bold),
                     );
@@ -221,14 +285,16 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //Tampilan jam
+                ////////////////
+                //Tampilan jam//
+                ////////////////
                 Container(
                   width: 65,
                   height: 65,
                   margin: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(13),
-                    color: const Color.fromARGB(255, 23, 23, 23),
+                    color: const Color.fromARGB(255, 64, 65, 75),
                   ),
                   child: Center(
                     child: BlocBuilder<RestworkTimerCubit, RestworkTimerModel>(
@@ -236,20 +302,22 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                       builder: (context, state) => Text(
                           NumberFormat('00').format(provider.timerHours),
                           style: const TextStyle(
-                              color: Color.fromARGB(255, 238, 238, 238),
+                              color: Color.fromARGB(255, 255, 255, 255),
                               fontSize: 30,
                               fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ),
-                //Tampilan menit
+                //////////////////
+                //Tampilan menit//
+                //////////////////
                 Container(
                   width: 65,
                   height: 65,
                   margin: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(13),
-                    color: const Color.fromARGB(255, 23, 23, 23),
+                    color: const Color.fromARGB(255, 64, 65, 75),
                   ),
                   child: Center(
                     child: BlocBuilder<RestworkTimerCubit, RestworkTimerModel>(
@@ -257,20 +325,22 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                       builder: (context, state) => Text(
                           NumberFormat('00').format(provider.timerMinutes),
                           style: const TextStyle(
-                              color: Color.fromARGB(255, 238, 238, 238),
+                              color: Color.fromARGB(255, 255, 255, 255),
                               fontSize: 30,
                               fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ),
-                //Tampilan detik
+                //////////////////
+                //Tampilan detik//
+                //////////////////
                 Container(
                   width: 65,
                   height: 65,
                   margin: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(13),
-                    color: const Color.fromARGB(255, 23, 23, 23),
+                    color: const Color.fromARGB(255, 64, 65, 75),
                   ),
                   child: Center(
                     child: BlocBuilder<RestworkTimerCubit, RestworkTimerModel>(
@@ -278,7 +348,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                       builder: (context, state) => Text(
                         NumberFormat('00').format(provider.timerSeconds),
                         style: const TextStyle(
-                            color: Color.fromARGB(255, 238, 238, 238),
+                            color: Color.fromARGB(255, 255, 255, 255),
                             fontSize: 30,
                             fontWeight: FontWeight.bold),
                       ),
@@ -297,14 +367,14 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                     width: 90,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(17),
-                      color: const Color.fromARGB(255, 23, 23, 23),
+                      color: const Color.fromARGB(255, 64, 65, 75),
                     ),
                     child: const Center(
                       child: Text(
                         'BreakTime',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 238, 238, 238),
+                          color: Color.fromARGB(255, 255, 255, 255),
                         ),
                       ),
                     ),
@@ -314,7 +384,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 238, 238, 238),
+                      color: Color.fromARGB(255, 255, 255, 255),
                     ),
                   ),
                   Container(
@@ -322,14 +392,14 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                     width: 85,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(17),
-                      color: const Color.fromARGB(255, 23, 23, 23),
+                      color: const Color.fromARGB(255, 64, 65, 75),
                     ),
                     child: const Center(
                       child: Text(
                         'WorkTime',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 238, 238, 238),
+                          color: Color.fromARGB(255, 255, 255, 255),
                         ),
                       ),
                     ),
@@ -339,7 +409,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 238, 238, 238),
+                      color: Color.fromARGB(255, 255, 255, 255),
                     ),
                   ),
                   //Menunjukkan breakRatio
@@ -348,7 +418,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                     height: 40,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(17),
-                      color: const Color.fromARGB(255, 23, 23, 23),
+                      color: const Color.fromARGB(255, 64, 65, 75),
                     ),
                     child: Center(
                       child:
@@ -358,7 +428,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                           provider.breakRatio.toString(),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 238, 238, 238),
+                            color: Color.fromARGB(255, 255, 255, 255),
                           ),
                         ),
                       ),
@@ -451,15 +521,15 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                           BlocBuilder<RestworkTimerCubit, RestworkTimerModel>(
                         bloc: provider,
                         builder: (context, state) => FloatingActionButton(
-                          // heroTag: 'c',
+                          heroTag: 'c',
                           backgroundColor:
-                              const Color.fromARGB(255, 238, 238, 238),
+                              const Color.fromARGB(255, 255, 255, 255),
                           onPressed: () {
                             provider.breakButton();
                           },
                           child: const Icon(
                             Icons.free_breakfast,
-                            color: Color.fromARGB(255, 23, 23, 23),
+                            color: Color.fromARGB(255, 64, 65, 75),
                           ),
                         ),
                       ),
@@ -472,65 +542,32 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                     child: BlocBuilder<RestworkTimerCubit, RestworkTimerModel>(
                       bloc: provider,
                       builder: (context, state) => FloatingActionButton(
-                        // heroTag: 'a',
+                        heroTag: 'a',
                         backgroundColor:
-                            const Color.fromARGB(255, 238, 238, 238),
+                            const Color.fromARGB(255, 255, 255, 255),
                         onPressed: () {
                           setState(() {
                             isVisible = true;
                           });
-                          //jika timer pertama kali di mulai atau selesai di reset
-                          if (provider.isTimerRun == false) {
-                            provider.playPauseButton();
-                            setState(
-                              () {
-                                iconController.forward();
-                              },
-                            );
-                            //jika timer sedang mengurangi angka dan kondisi tidak di pause
-                          } else if (provider.isTimerRun == true &&
-                              (provider.isTimerIncrease == false &&
-                                  provider.isTimerDecrease == true) &&
-                              provider.isTimerPause == false) {
-                            provider.playPauseButton();
-                            setState(
-                              () {
-                                iconController.reverse();
-                              },
-                            );
-                            //jika timer sedang menambah angka dan kondisi tidak di pause
-                          } else if (provider.isTimerRun == true &&
-                              (provider.isTimerIncrease == true &&
-                                  provider.isTimerDecrease == false) &&
-                              provider.isTimerPause == false) {
-                            provider.playPauseButton();
-                            setState(
-                              () {
-                                iconController.reverse();
-                              },
-                            );
-                            //jika timer sedang mengurangi angka dan kondisi sedang di pause
-                          } else if (provider.isTimerRun == true &&
-                              (provider.isTimerIncrease == false &&
-                                  provider.isTimerDecrease == true) &&
-                              provider.isTimerPause == true) {
-                            provider.playPauseButton();
-                            setState(() {
-                              iconController.forward();
-                            });
-                            //jika timer sedang menambah angka dan kondisi sedang di pause
-                          } else if (provider.isTimerRun == true &&
-                              (provider.isTimerIncrease == true &&
-                                  provider.isTimerDecrease == false) &&
-                              provider.isTimerPause == true) {
-                            provider.playPauseButton();
-                            setState(() {
-                              iconController.forward();
-                            });
-                          } else {}
+                          provider.playPauseButton(
+                            () {
+                              setState(
+                                () {
+                                  iconController.forward();
+                                },
+                              );
+                            },
+                            () {
+                              setState(
+                                () {
+                                  iconController.reverse();
+                                },
+                              );
+                            },
+                          );
                         },
                         child: AnimatedIcon(
-                            color: const Color.fromARGB(255, 23, 23, 23),
+                            color: const Color.fromARGB(255, 64, 65, 75),
                             icon: AnimatedIcons.play_pause,
                             progress: iconController),
                       ),
@@ -560,7 +597,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                         builder: (context, state) => FloatingActionButton(
                           heroTag: 'b',
                           backgroundColor:
-                              const Color.fromARGB(255, 238, 238, 238),
+                              const Color.fromARGB(255, 255, 255, 255),
                           onPressed: () {
                             provider.resetButton();
                             setState(
@@ -578,7 +615,7 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
                           },
                           child: const Icon(
                             Icons.stop,
-                            color: Color.fromARGB(255, 23, 23, 23),
+                            color: Color.fromARGB(255, 64, 65, 75),
                           ),
                         ),
                       ),
