@@ -1,6 +1,5 @@
 # garap
 Aplikasi produktivitas yang dibuat dengan Flutter agar "garapan" anda lebih terstruktur
-
 # THANKS
 - Developer of libraries/packages used on this project
 - Creator of image & audio assets
