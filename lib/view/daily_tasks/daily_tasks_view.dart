@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:garap/bloc/daily_tasks_cubit.dart';
 import 'package:garap/view/daily_tasks/daily_tasks_settings_view.dart';
@@ -10,37 +12,22 @@ class DailyTasksView extends StatefulWidget {
 }
 
 class _DailyTasksViewState extends State<DailyTasksView> {
-  DailyTasksCubit provider = DailyTasksCubit();
-  GlobalKey globalKey = GlobalKey();
+  ////////////
+  //variable//
+  ////////////
+  final DailyTasksCubit provider = DailyTasksCubit();
+  late final StreamSubscription boxListener;
   ////////////
   //override//
   ////////////
   @override
   initState() {
-    provider.updateDay();
-    if (provider.day != provider.dbDay.get('day_box') &&
-        provider.tasksBox.length > 0) {
-      for (var i = 0; i < provider.tasksBox.length; i++) {
-        provider.tasksBox.putAt(i, {
-          'status': false,
-          'task': provider.tasksBox.getAt(i)['task'],
-          'description': provider.tasksBox.getAt(i)['description'],
-          'sunday': provider.tasksBox.getAt(i)['sunday'],
-          'monday': provider.tasksBox.getAt(i)['monday'],
-          'tuesday': provider.tasksBox.getAt(i)['tuesday'],
-          'wednesday': provider.tasksBox.getAt(i)['wednesday'],
-          'thursday': provider.tasksBox.getAt(i)['thursday'],
-          'friday': provider.tasksBox.getAt(i)['friday'],
-          'saturday': provider.tasksBox.getAt(i)['saturday'],
-        });
-      }
-    }
-    provider.tasksBox.watch().listen(
+    provider.checkIsDayChanged();
+    boxListener = provider.tasksBox.watch().listen(
       (event) {
         provider.refreshTasksView();
       },
     );
-    provider.updateDbDay();
     provider.refreshTasksView();
     super.initState();
   }
@@ -48,6 +35,7 @@ class _DailyTasksViewState extends State<DailyTasksView> {
   @override
   dispose() {
     provider.isDispose = true;
+    boxListener.cancel();
     super.dispose();
   }
 
@@ -102,7 +90,6 @@ class _DailyTasksViewState extends State<DailyTasksView> {
                       builder: (context, constraints) {
                         final width = constraints.maxWidth;
                         final height = constraints.maxHeight;
-
                         return Align(
                           alignment: Alignment.centerLeft,
                           child: AnimatedContainer(
@@ -137,6 +124,10 @@ class _DailyTasksViewState extends State<DailyTasksView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(' - ${currentTask['description']}'),
+                          Text(
+                            'Do At ${(currentTask['hourDate'].toString().length > 1) ? '${currentTask['hourDate']}' : '0${currentTask['hourDate']}'}:${(currentTask['minuteDate'].toString().length > 1) ? '${currentTask['minuteDate']}' : '0${currentTask['minuteDate']}'}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
                         ],
                       ),
                     ),

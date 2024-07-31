@@ -9,6 +9,7 @@ class DailyTasksModel {
     required this.day,
     required this.isDispose,
     required this.onEvery,
+    required this.dateTimeTask,
   });
 
   final List<Map<String, dynamic>> tasksView;
@@ -18,6 +19,7 @@ class DailyTasksModel {
   final List<Map<String, dynamic>> tasksSettingsView;
   final Box<dynamic> dbDay = Hive.box('day_box');
   final Box<dynamic> tasksBox = Hive.box('daily_task_box');
+  final DateTime dateTimeTask;
 
   DailyTasksModel copyWith({
     List<Map<String, dynamic>>? tasksView,
@@ -25,8 +27,10 @@ class DailyTasksModel {
     String? day,
     bool? isDispose,
     Set<Days>? onEvery,
+    DateTime? dateTimeTask
   }) {
     return DailyTasksModel(
+      dateTimeTask: dateTimeTask ?? this.dateTimeTask,
       tasksSettingsView: tasksSettingsView ?? this.tasksSettingsView,
       tasksView: tasksView ?? this.tasksView,
       day: day ?? this.day,

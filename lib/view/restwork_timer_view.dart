@@ -251,7 +251,6 @@ class _RestworkTimerViewState extends State<RestworkTimerView>
             bloc: provider,
             builder: (context, state) => IconButton(
               onPressed: () {
-                provider.bugTesting();
                 provider.audioMode = !provider.audioMode;
               },
               icon: Icon((provider.audioMode == true)

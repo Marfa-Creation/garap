@@ -1,6 +1,4 @@
 import 'dart:async';
-
-// import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:garap/model/daily_tasks_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -10,6 +8,7 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
   DailyTasksCubit()
       : super(
           DailyTasksModel(
+            dateTimeTask: DateTime(DateTime.now().year),
             tasksSettingsView: const [],
             tasksView: const [],
             day: DateFormat('EEEE').format(DateTime.now()),
@@ -46,9 +45,13 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
   //////////
   //method//
   //////////
-  
-  void clearButtonConditions(){
-    state.copyWith(onEvery: state.onEvery.toSet()..clear());
+
+  void enableAllDay() {
+    emit(state.copyWith(onEvery: Days.values.toSet()));
+  }
+
+  void disableAllDay() {
+    emit(state.copyWith(onEvery: state.onEvery.toSet()..clear()));
   }
 
   void switchSundayButton() {
@@ -141,6 +144,8 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
             'thursday': item['thursday'],
             'friday': item['friday'],
             'saturday': item['saturday'],
+            'hourDate': item['hourDate'],
+            'minuteDate': item['minuteDate'],
           };
         })
         .cast<Map<String, dynamic>>()
@@ -199,6 +204,8 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
             'thursday': item['thursday'],
             'friday': item['friday'],
             'saturday': item['saturday'],
+            'hourDate': item['hourDate'],
+            'minuteDate': item['minuteDate'],
           };
         })
         .cast<Map<String, dynamic>>()
@@ -207,11 +214,40 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
     emit(state.copyWith(tasksSettingsView: data.reversed.toList()));
   }
 
-  void updateDay() async {
+  Future<void> checkIsDayChanged() async {
+    updateDay();
+    updateDbDay();
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (isDispose == true) {
+        timer.cancel();
+      } else {
+        if (state.day != state.dbDay.get('day_box')) {
+          state.dbDay.put('day_box', DateFormat('EEEE').format(DateTime.now()));
+          for (var i = 0; i < state.tasksBox.length; i++) {
+            state.tasksBox.putAt(i, {
+              'status': false,
+              'task': state.tasksBox.getAt(i)['task'],
+              'description': state.tasksBox.getAt(i)['description'],
+              'sunday': state.tasksBox.getAt(i)['sunday'],
+              'monday': state.tasksBox.getAt(i)['monday'],
+              'tuesday': state.tasksBox.getAt(i)['tuesday'],
+              'wednesday': state.tasksBox.getAt(i)['wednesday'],
+              'thursday': state.tasksBox.getAt(i)['thursday'],
+              'friday': state.tasksBox.getAt(i)['friday'],
+              'saturday': state.tasksBox.getAt(i)['saturday'],
+              'hourDate': state.tasksBox.getAt(i)['hourDate'],
+              'minuteDate': state.tasksBox.getAt(i)['minuteDate'],
+            });
+          }
+        }
+      }
+    });
+  }
+
+  Future<void> updateDay() async {
     Timer.periodic(
-      const Duration(seconds: 1),
+      const Duration(seconds: 5),
       (timer) {
-        // print('day periodic run');
         if (state.isDispose == true) {
           timer.cancel();
         } else {
@@ -221,7 +257,7 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
     );
   }
 
-  void updateDbDay() {
+  Future<void> updateDbDay() async {
     Timer.periodic(
       const Duration(seconds: 1),
       (timer) {
@@ -248,6 +284,8 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
         'thursday': data['thursday'],
         'friday': data['friday'],
         'saturday': data['saturday'],
+        'hourDate': data['hourDate'],
+        'minuteDate': data['minuteDate'],
       },
     );
   }
@@ -256,9 +294,10 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
     int itemKey,
     String taskName,
     String description,
+    DateTime dateTimeTask
   ) {
     Map<String, dynamic> data = {
-      'status': state.tasksBox.getAt(itemKey)['status'],
+      'status': state.tasksBox.get(itemKey)['status'],
       'task': taskName,
       'description': description,
       'sunday': state.onEvery.contains(Days.sunday),
@@ -268,6 +307,8 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
       'thursday': state.onEvery.contains(Days.thursday),
       'friday': state.onEvery.contains(Days.friday),
       'saturday': state.onEvery.contains(Days.saturday),
+      'hourDate': dateTimeTask.hour,
+      'minuteDate': dateTimeTask.minute,
     };
     state.tasksBox.put(itemKey, data);
   }
@@ -275,6 +316,7 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
   void addTask(
     String taskName,
     String description,
+    DateTime dateTimeTask,
   ) async {
     final Map<String, dynamic> data = {
       'status': false,
@@ -287,6 +329,8 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
       'thursday': state.onEvery.contains(Days.thursday),
       'friday': state.onEvery.contains(Days.friday),
       'saturday': state.onEvery.contains(Days.saturday),
+      'hourDate': dateTimeTask.hour,
+      'minuteDate': dateTimeTask.minute,
     };
 
     await state.tasksBox.add(data);

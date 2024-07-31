@@ -46,6 +46,7 @@ class MenuCardWidget extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 20, bottom: 15),
                     child: Text(
                       text,
+                      textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Color.fromARGB(255, 255, 255, 255),
                         fontSize: 22,
