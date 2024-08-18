@@ -32,15 +32,8 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
   //setter//
   //////////
 
-  set onEvery(Set<Days> value) {
-    emit(
-      state.copyWith(onEvery: value),
-    );
-  }
-
-  set isDispose(bool value) {
-    emit(state.copyWith(isDispose: value));
-  }
+  set onEvery(Set<Days> value) => emit(state.copyWith(onEvery: value));
+  set isDispose(bool value) => emit(state.copyWith(isDispose: value));
 
   //////////
   //method//
@@ -54,77 +47,78 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
     emit(state.copyWith(onEvery: state.onEvery.toSet()..clear()));
   }
 
-  void switchSundayButton() {
-    //jika tombol sedang dalam kondisi mati, maka if dijalankan
-    if (state.onEvery.contains(Days.sunday) == false) {
-      emit(state.copyWith(onEvery: state.onEvery.toSet()..add(Days.sunday)));
-      //jika tombol sedang dalam kondisi menyala, maka else dijalankan
-    } else {
-      emit(state.copyWith(onEvery: state.onEvery.toSet()..remove(Days.sunday)));
-    }
-  }
-
-  void switchMondayButton() {
-    //jika tombol sedang dalam kondisi mati, maka if dijalankan
-    if (state.onEvery.contains(Days.monday) == false) {
-      emit(state.copyWith(onEvery: state.onEvery.toSet()..add(Days.monday)));
-      //jika tombol sedang dalam kondisi menyala, maka else dijalankan
-    } else {
-      emit(state.copyWith(onEvery: state.onEvery.toSet()..remove(Days.monday)));
-    }
-  }
-
-  void switchTuesdayButton() {
-    //jika tombol sedang dalam kondisi mati, maka if dijalankan
-    if (state.onEvery.contains(Days.tuesday) == false) {
-      emit(state.copyWith(onEvery: state.onEvery.toSet()..add(Days.tuesday)));
-      //jika tombol sedang dalam kondisi menyala, maka else dijalankan
-    } else {
-      emit(
-          state.copyWith(onEvery: state.onEvery.toSet()..remove(Days.tuesday)));
-    }
-  }
-
-  void switchWednesdayButton() {
-    //jika tombol sedang dalam kondisi mati, maka if dijalankan
-    if (state.onEvery.contains(Days.wednesday) == false) {
-      emit(state.copyWith(onEvery: state.onEvery.toSet()..add(Days.wednesday)));
-      //jika tombol sedang dalam kondisi menyala, maka else dijalankan
-    } else {
-      emit(state.copyWith(
-          onEvery: state.onEvery.toSet()..remove(Days.wednesday)));
-    }
-  }
-
-  void switchThursdayButton() {
-    //jika tombol sedang dalam kondisi mati, maka if dijalankan
-    if (state.onEvery.contains(Days.thursday) == false) {
-      emit(state.copyWith(onEvery: state.onEvery.toSet()..add(Days.thursday)));
-      //jika tombol sedang dalam kondisi menyala, maka else dijalankan
-    } else {
-      emit(state.copyWith(
-          onEvery: state.onEvery.toSet()..remove(Days.thursday)));
-    }
-  }
-
-  void switchFridayButton() {
-    //jika tombol sedang dalam kondisi mati, maka if dijalankan
-    if (state.onEvery.contains(Days.friday) == false) {
-      emit(state.copyWith(onEvery: state.onEvery.toSet()..add(Days.friday)));
-      //jika tombol sedang dalam kondisi menyala, maka else dijalankan
-    } else {
-      emit(state.copyWith(onEvery: state.onEvery.toSet()..remove(Days.friday)));
-    }
-  }
-
-  void switchSaturdayButton() {
-    //jika tombol sedang dalam kondisi mati, maka if dijalankan
-    if (state.onEvery.contains(Days.saturday) == false) {
-      emit(state.copyWith(onEvery: state.onEvery.toSet()..add(Days.saturday)));
-      //jika tombol sedang dalam kondisi menyala, maka else dijalankan
-    } else {
-      emit(state.copyWith(
-          onEvery: state.onEvery.toSet()..remove(Days.saturday)));
+  void switchDayButton(Days day) {
+    switch (day) {
+      //sunday
+      case Days.sunday:
+        if (state.onEvery.contains(Days.sunday) == false) {
+          emit(
+              state.copyWith(onEvery: state.onEvery.toSet()..add(Days.sunday)));
+        } else {
+          emit(state.copyWith(
+              onEvery: state.onEvery.toSet()..remove(Days.sunday)));
+        }
+        break;
+      //monday
+      case Days.monday:
+        if (state.onEvery.contains(Days.monday) == false) {
+          emit(
+              state.copyWith(onEvery: state.onEvery.toSet()..add(Days.monday)));
+        } else {
+          emit(state.copyWith(
+              onEvery: state.onEvery.toSet()..remove(Days.monday)));
+        }
+        break;
+      //tuesday
+      case Days.tuesday:
+        if (state.onEvery.contains(Days.tuesday) == false) {
+          emit(state.copyWith(
+              onEvery: state.onEvery.toSet()..add(Days.tuesday)));
+        } else {
+          emit(state.copyWith(
+              onEvery: state.onEvery.toSet()..remove(Days.tuesday)));
+        }
+        break;
+      //wednesday
+      case Days.wednesday:
+        if (state.onEvery.contains(Days.wednesday) == false) {
+          emit(state.copyWith(
+              onEvery: state.onEvery.toSet()..add(Days.wednesday)));
+        } else {
+          emit(state.copyWith(
+              onEvery: state.onEvery.toSet()..remove(Days.wednesday)));
+        }
+        break;
+      //thursday
+      case Days.thursday:
+        if (state.onEvery.contains(Days.thursday) == false) {
+          emit(state.copyWith(
+              onEvery: state.onEvery.toSet()..add(Days.thursday)));
+        } else {
+          emit(state.copyWith(
+              onEvery: state.onEvery.toSet()..remove(Days.thursday)));
+        }
+        break;
+      //friday
+      case Days.friday:
+        if (state.onEvery.contains(Days.friday) == false) {
+          emit(
+              state.copyWith(onEvery: state.onEvery.toSet()..add(Days.friday)));
+        } else {
+          emit(state.copyWith(
+              onEvery: state.onEvery.toSet()..remove(Days.friday)));
+        }
+        break;
+      //saturday
+      case Days.saturday:
+        if (state.onEvery.contains(Days.saturday) == false) {
+          emit(state.copyWith(
+              onEvery: state.onEvery.toSet()..add(Days.saturday)));
+        } else {
+          emit(state.copyWith(
+              onEvery: state.onEvery.toSet()..remove(Days.saturday)));
+        }
+        break;
     }
   }
 
@@ -215,12 +209,14 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
   }
 
   Future<void> checkIsDayChanged() async {
-    updateDay();
-    updateDbDay();
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (isDispose == true) {
         timer.cancel();
       } else {
+        //update hari apa sekarang
+        emit(state.copyWith(day: DateFormat('EEEE').format(DateTime.now())));
+
+        //bandingan dengan hari pada database, jika berbeda(yang berarti ada pergantian hari), tugas akan di refresh
         if (state.day != state.dbDay.get('day_box')) {
           state.dbDay.put('day_box', DateFormat('EEEE').format(DateTime.now()));
           for (var i = 0; i < state.tasksBox.length; i++) {
@@ -240,36 +236,12 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
             });
           }
         }
+        await state.dbDay
+            .put('day_box', DateFormat('EEEE').format(DateTime.now()));
       }
     });
   }
-
-  Future<void> updateDay() async {
-    Timer.periodic(
-      const Duration(seconds: 5),
-      (timer) {
-        if (state.isDispose == true) {
-          timer.cancel();
-        } else {
-          emit(state.copyWith(day: DateFormat('EEEE').format(DateTime.now())));
-        }
-      },
-    );
-  }
-
-  Future<void> updateDbDay() async {
-    Timer.periodic(
-      const Duration(seconds: 1),
-      (timer) {
-        if (state.isDispose == true) {
-          timer.cancel();
-        } else {
-          state.dbDay.put('day_box', DateFormat('EEEE').format(DateTime.now()));
-        }
-      },
-    );
-  }
-
+  
   void switchTaskStatus(Map<String, dynamic> data) {
     state.tasksBox.put(
       data['key'],
@@ -291,11 +263,7 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
   }
 
   void editTask(
-    int itemKey,
-    String taskName,
-    String description,
-    DateTime dateTimeTask
-  ) {
+      int itemKey, String taskName, String description, DateTime dateTimeTask) {
     Map<String, dynamic> data = {
       'status': state.tasksBox.get(itemKey)['status'],
       'task': taskName,

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:garap/bloc/daily_tasks_cubit.dart';
 import 'package:garap/view/daily_tasks/daily_tasks_settings_view.dart';
-
 class DailyTasksView extends StatefulWidget {
   const DailyTasksView({super.key});
 

@@ -168,7 +168,7 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                                                 255, 79, 249, 113)
                                             : Colors.grey[300],
                                         onPressed: () {
-                                          provider.switchSundayButton();
+                                          provider.switchDayButton(Days.sunday);
                                           setState(() {});
                                         },
                                         buttonText: 'Sun',
@@ -184,7 +184,7 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                                                 255, 79, 249, 113)
                                             : Colors.grey[300],
                                         onPressed: () {
-                                          provider.switchMondayButton();
+                                          provider.switchDayButton(Days.monday);
                                           setState(() {});
                                         },
                                         buttonText: 'Mon',
@@ -200,7 +200,7 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                                                   255, 79, 249, 113)
                                               : Colors.grey[300],
                                           onPressed: () {
-                                            provider.switchTuesdayButton();
+                                            provider.switchDayButton(Days.tuesday);
                                             setState(() {});
                                           },
                                           buttonText: 'Tue'),
@@ -215,7 +215,7 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                                                   255, 79, 249, 113)
                                               : Colors.grey[300],
                                           onPressed: () {
-                                            provider.switchWednesdayButton();
+                                            provider.switchDayButton(Days.wednesday);
                                             setState(() {});
                                           },
                                           buttonText: 'Wed'),
@@ -230,7 +230,7 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                                                   255, 79, 249, 113)
                                               : Colors.grey[300],
                                           onPressed: () {
-                                            provider.switchThursdayButton();
+                                            provider.switchDayButton(Days.thursday);
                                             setState(() {});
                                           },
                                           buttonText: 'Thu'),
@@ -245,7 +245,7 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                                                   255, 79, 249, 113)
                                               : Colors.grey[300],
                                           onPressed: () {
-                                            provider.switchFridayButton();
+                                            provider.switchDayButton(Days.friday);
                                             setState(() {});
                                           },
                                           buttonText: 'Fri'),
@@ -260,7 +260,7 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                                                 255, 79, 249, 113)
                                             : Colors.grey[300],
                                         onPressed: () {
-                                          provider.switchSaturdayButton();
+                                          provider.switchDayButton(Days.saturday);
                                           setState(() {});
                                         },
                                         buttonText: 'Sat',
@@ -272,8 +272,9 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                                           setState(() {});
                                         },
                                         child: Container(
-                                          width: 17,
-                                          height: 17,
+                                          margin: const EdgeInsets.only(left: 2),
+                                          width: 20,
+                                          height: 20,
                                           decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(20),
@@ -603,7 +604,7 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                                                           : Colors.grey[300],
                                                       onPressed: () {
                                                         provider
-                                                            .switchSundayButton();
+                                                            .switchDayButton(Days.sunday);
                                                         setState(() {});
                                                       },
                                                       buttonText: 'Sun',
@@ -623,7 +624,7 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                                                           : Colors.grey[300],
                                                       onPressed: () {
                                                         provider
-                                                            .switchMondayButton();
+                                                            .switchDayButton(Days.monday);
                                                         setState(() {});
                                                       },
                                                       buttonText: 'Mon',
@@ -643,7 +644,7 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                                                             : Colors.grey[300],
                                                         onPressed: () {
                                                           provider
-                                                              .switchTuesdayButton();
+                                                              .switchDayButton(Days.tuesday);
                                                           setState(() {});
                                                         },
                                                         buttonText: 'Tue'),
@@ -662,7 +663,7 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                                                             : Colors.grey[300],
                                                         onPressed: () {
                                                           provider
-                                                              .switchWednesdayButton();
+                                                              .switchDayButton(Days.wednesday);
                                                           setState(() {});
                                                         },
                                                         buttonText: 'Wed'),
@@ -681,7 +682,7 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                                                             : Colors.grey[300],
                                                         onPressed: () {
                                                           provider
-                                                              .switchThursdayButton();
+                                                              .switchDayButton(Days.thursday);
                                                           setState(() {});
                                                         },
                                                         buttonText: 'Thu'),
@@ -700,7 +701,7 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                                                             : Colors.grey[300],
                                                         onPressed: () {
                                                           provider
-                                                              .switchFridayButton();
+                                                              .switchDayButton(Days.friday);
                                                           setState(() {});
                                                         },
                                                         buttonText: 'Fri'),
@@ -720,7 +721,7 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                                                           : Colors.grey[300],
                                                       onPressed: () {
                                                         provider
-                                                            .switchSaturdayButton();
+                                                            .switchDayButton(Days.saturday);
                                                         setState(() {});
                                                       },
                                                       buttonText: 'Sat',
@@ -732,8 +733,9 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                                                         setState(() {});
                                                       },
                                                       child: Container(
-                                                        width: 17,
-                                                        height: 17,
+                                                        margin: const EdgeInsets.only(left: 2),
+                                                        width: 20,
+                                                        height: 20,
                                                         decoration:
                                                             BoxDecoration(
                                                           borderRadius:

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:garap/view/daily_tasks/daily_tasks_view.dart';
 import 'package:garap/view/onetime_tasks_view.dart';
+import 'package:garap/view/pomodoro_timer_view.dart';
 import 'package:garap/view/restwork_timer_view.dart';
 import 'package:garap/widgets/menu_card_widget.dart';
 
@@ -111,14 +112,7 @@ class _MainPageState extends State<MainPage>
                   children: [
                     //MenuCardWidget untuk menuju ke`TimerView`
                     MenuCardWidget(
-                      // gradient: const LinearGradient(
-                      //   begin: Alignment.topLeft,
-                      //   end: Alignment.bottomRight,
-                      //   colors: [
-                      //   Color.fromARGB(255, 28, 80, 223),
-                      //   Color.fromARGB(255, 196, 18, 220),
-                      // ]),
-                      text: 'Restwork Timer',
+                      text: 'Restwork',
                       icon: const Icon(
                         Icons.timer,
                         size: 100,
@@ -134,7 +128,23 @@ class _MainPageState extends State<MainPage>
                       },
                     ),
                     const SizedBox(width: 20),
-                    const MenuCardWidget(),
+                    //MenuCardWidget untuk menuju ke`PomodoroTimerView`
+                    MenuCardWidget(
+                      text: 'Pomodoro',
+                      icon: const Icon(
+                        Icons.timelapse_rounded,
+                        size: 100,
+                        color: Color.fromARGB(255, 255, 255, 255),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PomodoroTimerView(),
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
                 const SizedBox(height: 30),

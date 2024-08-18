@@ -66,17 +66,10 @@ class RestworkTimerCubit extends Cubit<RestworkTimerModel> {
   //method//
   //////////
 
-  //
-  void bugTesting() {
-    emit(
-      state.copyWith(
-        timerSeconds: 55,
-        timerMinutes: 59,
-        timerHours: 23,
-      ),
-    );
+  void bug() {
+    // emit(state.copyWith(timerSeconds: 300));
+    // print()
   }
-
   void playPauseButton(
     void Function() forwardController,
     void Function() reverseController,
@@ -235,53 +228,54 @@ class RestworkTimerCubit extends Cubit<RestworkTimerModel> {
         //cancel timer
         if (state.isDispose == true) {
           timer.cancel();
+        } else {
+          if (state.isTimerIncrease == false &&
+              state.isTimerDecrease == true &&
+              state.isTimerRun == true &&
+              state.isTimerPause == false) {
+            if (state.timerHours == 0 &&
+                state.timerMinutes == 0 &&
+                state.timerSeconds == 0) {
+              _playAlarm(context, endTimeView);
+            }
+            //jika kondisi terpenuhi, maka akan mulai mengurangi nilai antara detik, menit, dan jam
+            if (state.timerSeconds > 0 ||
+                state.timerMinutes > 0 ||
+                state.timerHours > 0) {
+              //bunyikan suara detik jam jika user meminta
+              if (state.audioMode == true) {
+                tickSound.play(AssetSource('tick_sound.mp3'));
+              }
+
+              //kurangi nilai detik
+              emit(
+                state.copyWith(
+                  timerSeconds: state.timerSeconds - 1,
+                ),
+              );
+              //untuk mengurangi nilai menit dan set nilai detik ke `59`
+              if (state.timerSeconds < 0) {
+                emit(
+                  state.copyWith(
+                    timerSeconds: 59,
+                    timerMinutes: state.timerMinutes - 1,
+                  ),
+                );
+              }
+              //untuk mengurangi nilai jam dan set nilai menit ke `59`
+              if (state.timerMinutes < 0) {
+                emit(
+                  state.copyWith(
+                    timerMinutes: 59,
+                    timerHours: state.timerHours - 1,
+                  ),
+                );
+              }
+            }
+          }
         }
 
         //decrease timer
-        if (state.isTimerIncrease == false &&
-            state.isTimerDecrease == true &&
-            state.isTimerRun == true &&
-            state.isTimerPause == false) {
-          if (state.timerHours == 0 &&
-              state.timerMinutes == 0 &&
-              state.timerSeconds == 0) {
-            _playAlarm(context, endTimeView);
-          }
-          //jika kondisi terpenuhi, maka akan mulai mengurangi nilai antara detik, menit, dan jam
-          if (state.timerSeconds > 0 ||
-              state.timerMinutes > 0 ||
-              state.timerHours > 0) {
-            //bunyikan suara detik jam jika user meminta
-            if (state.audioMode == true) {
-              tickSound.play(AssetSource('tick_sound.mp3'));
-            }
-
-            //kurangi nilai detik
-            emit(
-              state.copyWith(
-                timerSeconds: state.timerSeconds - 1,
-              ),
-            );
-            //untuk mengurangi nilai menit dan set nilai detik ke `59`
-            if (state.timerSeconds < 0) {
-              emit(
-                state.copyWith(
-                  timerSeconds: 59,
-                  timerMinutes: state.timerMinutes - 1,
-                ),
-              );
-            }
-            //untuk mengurangi nilai jam dan set nilai menit ke `59`
-            if (state.timerMinutes < 0) {
-              emit(
-                state.copyWith(
-                  timerMinutes: 59,
-                  timerHours: state.timerHours - 1,
-                ),
-              );
-            }
-          }
-        }
       },
     );
   }
@@ -292,15 +286,18 @@ class RestworkTimerCubit extends Cubit<RestworkTimerModel> {
     double seconds = state.timerSeconds.toDouble();
     double totalSeconds = 0;
 
+    //konversi dari jam, menit, detik agar menjadi detik
     totalSeconds += hours * 60 * 60;
     totalSeconds += minutes * 60;
     totalSeconds += seconds;
     totalSeconds /= state.breakRatio;
 
+    //konversi dari detik agar menjadi jam, menit, detik
     double convertedHours = (totalSeconds / 3600);
     double convertedMinutes = (convertedHours - convertedHours.toInt()) * 60;
     double convertedSeconds =
         (convertedMinutes - convertedMinutes.toInt()) * 60;
+
     emit(
       state.copyWith(
         timerSeconds: convertedSeconds.toInt(),
