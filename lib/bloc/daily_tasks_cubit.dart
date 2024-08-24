@@ -39,6 +39,37 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
   //method//
   //////////
 
+  //ambil data dari DB, convert menjadi Set<Days>, sehingga tombol akan menyesuaikan dengan Set<Days>
+  //contoh:
+  //data dari DB menunjukkan tugas `A` akan muncul pada hari senin dan kamis,
+  //maka tombol senin dan kamis akan menyala.
+  void restoreDayFromDB(Map<String, dynamic> currentTask) {
+    Set<Days> days = {};
+    if (currentTask['sunday'] == true) {
+      days.add(Days.sunday);
+    }
+    if (currentTask['monday'] == true) {
+      days.add(Days.monday);
+    }
+    if (currentTask['tuesday'] == true) {
+      days.add(Days.tuesday);
+    }
+    if (currentTask['wednesday'] == true) {
+      days.add(Days.wednesday);
+    }
+    if (currentTask['thursday'] == true) {
+      days.add(Days.thursday);
+    }
+    if (currentTask['friday'] == true) {
+      days.add(Days.friday);
+    }
+    if (currentTask['saturday'] == true) {
+      days.add(Days.saturday);
+    }
+
+    emit(state.copyWith(onEvery: days));
+  }
+
   void enableAllDay() {
     emit(state.copyWith(onEvery: Days.values.toSet()));
   }
@@ -146,6 +177,11 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
         .toList();
 
     emit(state.copyWith(tasksView: data.reversed.toList()));
+
+    //filter untuk hanya mengambil tugas yang sesuai pada hari ini
+    //contoh:
+    //status `sunday` pada data tugas pada DB adalah true,
+    //maka tugas tersebut akan diambil jika hari ini adalah minggu
     emit(
       state.copyWith(
         tasksView: state.tasksView.where((element) {
@@ -174,12 +210,32 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
         }).toList(),
       ),
     );
+    //sortir berdasarkan waktu tugas dikerjakan
+    emit(
+      state.copyWith(
+        tasksView: state.tasksView
+          ..sort(
+            (now, next) {
+              return ((now['hourDate'] * 10 + now['minuteDate']) as int) -
+                  ((next['hourDate'] * 10 + next['minuteDate']) as int);
+            },
+          ),
+      ),
+    );
 
-    state.tasksView.sort((now, next) {
-      var a = (now['status']) ? 1 : 0;
-      var b = (next['status']) ? 1 : 0;
-      return a.compareTo(b);
-    });
+    //sortir berdasarkan status tugas, yang sudah selesai akan ditaruh pada poisis paling bawah
+    emit(
+      state.copyWith(
+        tasksView: state.tasksView
+          ..sort(
+            (now, next) {
+              final int a = (now['status']) ? 1 : 0;
+              final int b = (next['status']) ? 1 : 0;
+              return a.compareTo(b);
+            },
+          ),
+      ),
+    );
   }
 
   void refreshTasksSettingsView() {
@@ -206,6 +262,18 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
         .toList();
 
     emit(state.copyWith(tasksSettingsView: data.reversed.toList()));
+    //sortir berdasarkan waktu tugas dikerjakan
+    emit(
+      state.copyWith(
+        tasksSettingsView: state.tasksSettingsView
+          ..sort(
+            (now, next) {
+              return ((now['hourDate'] * 10 + now['minuteDate']) as int) -
+                  ((next['hourDate'] * 10 + next['minuteDate']) as int);
+            },
+          ),
+      ),
+    );
   }
 
   Future<void> checkIsDayChanged() async {
@@ -241,7 +309,7 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
       }
     });
   }
-  
+
   void switchTaskStatus(Map<String, dynamic> data) {
     state.tasksBox.put(
       data['key'],
@@ -263,7 +331,11 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
   }
 
   void editTask(
-      int itemKey, String taskName, String description, DateTime dateTimeTask) {
+    int itemKey,
+    String taskName,
+    String description,
+    DateTime dateTimeTask,
+  ) {
     Map<String, dynamic> data = {
       'status': state.tasksBox.get(itemKey)['status'],
       'task': taskName,

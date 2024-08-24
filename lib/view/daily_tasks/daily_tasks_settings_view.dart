@@ -44,9 +44,9 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
   final TextEditingController taskController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final FixedExtentScrollController listHoursController =
-      FixedExtentScrollController();
+      FixedExtentScrollController(initialItem: 24);
   final FixedExtentScrollController listMinutesController =
-      FixedExtentScrollController();
+      FixedExtentScrollController(initialItem: 60);
   late final StreamSubscription tasksBoxListener;
   late final StreamSubscription dayBoxListener;
   List<Widget> listHours = () {
@@ -94,6 +94,354 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
     return listMinutes;
   }();
 
+  //////////
+  //method//
+  //////////
+
+  Future<bool?> showDeleteTaskConfirmation() async {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          width: MediaQuery.sizeOf(context).width * 1 / 2,
+          height: 200,
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 64, 65, 75),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Are you sure to delete\nthis task?',
+                  maxLines: 3,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 255, 255, 255),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(height: 40),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: IconButton(
+                        onPressed: () {
+                          Navigator.pop(context, true);
+                        },
+                        icon: const Icon(
+                          Icons.check,
+                          color: Color.fromARGB(255, 79, 249, 113),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 35),
+                    SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: IconButton(
+                        onPressed: () {
+                          Navigator.pop(context, false);
+                        },
+                        icon: const Icon(
+                          Icons.close,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> showTaskForm({
+    required void Function() onButtonClick,
+    required String buttonText,
+  }) async {
+    await showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Container(
+            height: 450,
+            padding: const EdgeInsets.all(10),
+            decoration: const BoxDecoration(
+              color: Color.fromARGB(255, 238, 238, 238),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+              ),
+            ),
+            child: Stack(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      maxLength: 30,
+                      controller: taskController,
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 23, 23, 23)),
+                      decoration: const InputDecoration(
+                          label: Text(
+                        'Task',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      )),
+                    ),
+                    const Text(
+                      'Description',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    SizedBox(
+                      height: 150,
+                      child: TextField(
+                        minLines: 4,
+                        maxLines: 10,
+                        maxLength: 300,
+                        controller: descriptionController,
+                        style: const TextStyle(
+                            color: Color.fromARGB(255, 23, 23, 23)),
+                        decoration:
+                            const InputDecoration(border: OutlineInputBorder()),
+                      ),
+                    ),
+                    //tombol untuk user agar bisa memilih hari apa saja tugas dikerjakan
+                    StatefulBuilder(
+                      builder: (context, setState) => Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          //////////
+                          //sunday//
+                          //////////
+                          const SizedBox(width: 2),
+                          MiniSwitchButtonWidget(
+                            buttonColor:
+                                (provider.onEvery.contains(Days.sunday))
+                                    ? const Color.fromARGB(255, 79, 249, 113)
+                                    : Colors.grey[300],
+                            onPressed: () {
+                              provider.switchDayButton(Days.sunday);
+                              setState(() {});
+                            },
+                            buttonText: 'Sun',
+                          ),
+                          //////////
+                          //monday//
+                          //////////
+                          const SizedBox(width: 2),
+                          MiniSwitchButtonWidget(
+                            buttonColor:
+                                (provider.onEvery.contains(Days.monday))
+                                    ? const Color.fromARGB(255, 79, 249, 113)
+                                    : Colors.grey[300],
+                            onPressed: () {
+                              provider.switchDayButton(Days.monday);
+                              setState(() {});
+                            },
+                            buttonText: 'Mon',
+                          ),
+                          ///////////
+                          //tuesday//
+                          ///////////
+                          const SizedBox(width: 2),
+                          MiniSwitchButtonWidget(
+                              buttonColor:
+                                  (provider.onEvery.contains(Days.tuesday))
+                                      ? const Color.fromARGB(255, 79, 249, 113)
+                                      : Colors.grey[300],
+                              onPressed: () {
+                                provider.switchDayButton(Days.tuesday);
+                                setState(() {});
+                              },
+                              buttonText: 'Tue'),
+                          /////////////
+                          //wednesday//
+                          /////////////
+                          const SizedBox(width: 2),
+                          MiniSwitchButtonWidget(
+                              buttonColor:
+                                  (provider.onEvery.contains(Days.wednesday))
+                                      ? const Color.fromARGB(255, 79, 249, 113)
+                                      : Colors.grey[300],
+                              onPressed: () {
+                                provider.switchDayButton(Days.wednesday);
+                                setState(() {});
+                              },
+                              buttonText: 'Wed'),
+                          ////////////
+                          //thursday//
+                          ////////////
+                          const SizedBox(width: 2),
+                          MiniSwitchButtonWidget(
+                              buttonColor:
+                                  (provider.onEvery.contains(Days.thursday))
+                                      ? const Color.fromARGB(255, 79, 249, 113)
+                                      : Colors.grey[300],
+                              onPressed: () {
+                                provider.switchDayButton(Days.thursday);
+                                setState(() {});
+                              },
+                              buttonText: 'Thu'),
+                          //////////
+                          //friday//
+                          //////////
+                          const SizedBox(width: 2),
+                          MiniSwitchButtonWidget(
+                              buttonColor:
+                                  (provider.onEvery.contains(Days.friday))
+                                      ? const Color.fromARGB(255, 79, 249, 113)
+                                      : Colors.grey[300],
+                              onPressed: () {
+                                provider.switchDayButton(Days.friday);
+                                setState(() {});
+                              },
+                              buttonText: 'Fri'),
+                          ////////////
+                          //saturday//
+                          ////////////
+                          const SizedBox(width: 2),
+                          MiniSwitchButtonWidget(
+                            buttonColor:
+                                (provider.onEvery.contains(Days.saturday))
+                                    ? const Color.fromARGB(255, 79, 249, 113)
+                                    : Colors.grey[300],
+                            onPressed: () {
+                              provider.switchDayButton(Days.saturday);
+                              setState(() {});
+                            },
+                            buttonText: 'Sat',
+                          ),
+                          const SizedBox(width: 2),
+                          GestureDetector(
+                            onTap: () {
+                              provider.enableAllDay();
+                              setState(() {});
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(left: 2),
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: !(provider.onEvery
+                                        .containsAll(Days.values))
+                                    ? const Color.fromARGB(255, 238, 238, 238)
+                                    : const Color.fromARGB(255, 79, 249, 113),
+                                border: Border.all(
+                                  width: 2,
+                                  color: const Color.fromRGBO(224, 224, 224, 1),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: Container(
+                        width: 200,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.grey[300],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            //memilih jam berapa tugas dikerjakan
+                            SizedBox(
+                              width: 50,
+                              child: ListWheelScrollView.useDelegate(
+                                controller: listHoursController,
+                                physics: const FixedExtentScrollPhysics(),
+                                itemExtent: 40,
+                                childDelegate: ListWheelChildLoopingListDelegate(
+                                  children: listHours,
+                                ),
+                              ),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 5),
+                              child: Text(
+                                ':',
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 23, 23, 23),
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 50,
+                              child: ListWheelScrollView.useDelegate(
+                                controller: listMinutesController,
+                                physics: const FixedExtentScrollPhysics(),
+                                itemExtent: 40,
+                                childDelegate: ListWheelChildLoopingListDelegate(
+                                  children: listMinutes,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 15),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 68, 68, 68),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                      onPressed: () async {
+                        if (taskController.text.isNotEmpty) {
+                          onButtonClick();
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                          }
+                        }
+                      },
+                      child: Text(
+                        buttonText,
+                        style: const TextStyle(
+                          color: Color.fromARGB(255, 238, 238, 238),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,284 +453,20 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
           IconButton(
             onPressed: () {
               if (context.mounted) {
-                showModalBottomSheet(
-                  backgroundColor: Colors.transparent,
-                  isScrollControlled: true,
-                  context: context,
-                  builder: (context) {
-                    return Padding(
-                      padding: EdgeInsets.only(
-                          bottom: MediaQuery.of(context).viewInsets.bottom),
-                      child: Container(
-                        height: 350,
-                        padding: const EdgeInsets.all(10),
-                        decoration: const BoxDecoration(
-                          color: Color.fromARGB(255, 238, 238, 238),
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            topRight: Radius.circular(10),
-                          ),
-                        ),
-                        child: Stack(
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                TextField(
-                                  maxLength: 30,
-                                  controller: taskController,
-                                  style: const TextStyle(
-                                      color: Color.fromARGB(255, 23, 23, 23)),
-                                  decoration: const InputDecoration(
-                                      label: Text(
-                                    'Task',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  )),
-                                ),
-                                TextField(
-                                  maxLength: 100,
-                                  controller: descriptionController,
-                                  style: const TextStyle(
-                                      color: Color.fromARGB(255, 23, 23, 23)),
-                                  decoration: const InputDecoration(
-                                      label: Text(
-                                    'Description',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  )),
-                                ),
-                                //tombol untuk user agar bisa memilih hari apa saja tugas dikerjakan
-                                StatefulBuilder(
-                                  builder: (context, setState) => Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      //////////
-                                      //sunday//
-                                      //////////
-                                      const SizedBox(width: 2),
-                                      MiniSwitchButtonWidget(
-                                        buttonColor: (provider.onEvery
-                                                .contains(Days.sunday))
-                                            ? const Color.fromARGB(
-                                                255, 79, 249, 113)
-                                            : Colors.grey[300],
-                                        onPressed: () {
-                                          provider.switchDayButton(Days.sunday);
-                                          setState(() {});
-                                        },
-                                        buttonText: 'Sun',
-                                      ),
-                                      //////////
-                                      //monday//
-                                      //////////
-                                      const SizedBox(width: 2),
-                                      MiniSwitchButtonWidget(
-                                        buttonColor: (provider.onEvery
-                                                .contains(Days.monday))
-                                            ? const Color.fromARGB(
-                                                255, 79, 249, 113)
-                                            : Colors.grey[300],
-                                        onPressed: () {
-                                          provider.switchDayButton(Days.monday);
-                                          setState(() {});
-                                        },
-                                        buttonText: 'Mon',
-                                      ),
-                                      ///////////
-                                      //tuesday//
-                                      ///////////
-                                      const SizedBox(width: 2),
-                                      MiniSwitchButtonWidget(
-                                          buttonColor: (provider.onEvery
-                                                  .contains(Days.tuesday))
-                                              ? const Color.fromARGB(
-                                                  255, 79, 249, 113)
-                                              : Colors.grey[300],
-                                          onPressed: () {
-                                            provider.switchDayButton(Days.tuesday);
-                                            setState(() {});
-                                          },
-                                          buttonText: 'Tue'),
-                                      /////////////
-                                      //wednesday//
-                                      /////////////
-                                      const SizedBox(width: 2),
-                                      MiniSwitchButtonWidget(
-                                          buttonColor: (provider.onEvery
-                                                  .contains(Days.wednesday))
-                                              ? const Color.fromARGB(
-                                                  255, 79, 249, 113)
-                                              : Colors.grey[300],
-                                          onPressed: () {
-                                            provider.switchDayButton(Days.wednesday);
-                                            setState(() {});
-                                          },
-                                          buttonText: 'Wed'),
-                                      ////////////
-                                      //thursday//
-                                      ////////////
-                                      const SizedBox(width: 2),
-                                      MiniSwitchButtonWidget(
-                                          buttonColor: (provider.onEvery
-                                                  .contains(Days.thursday))
-                                              ? const Color.fromARGB(
-                                                  255, 79, 249, 113)
-                                              : Colors.grey[300],
-                                          onPressed: () {
-                                            provider.switchDayButton(Days.thursday);
-                                            setState(() {});
-                                          },
-                                          buttonText: 'Thu'),
-                                      //////////
-                                      //friday//
-                                      //////////
-                                      const SizedBox(width: 2),
-                                      MiniSwitchButtonWidget(
-                                          buttonColor: (provider.onEvery
-                                                  .contains(Days.friday))
-                                              ? const Color.fromARGB(
-                                                  255, 79, 249, 113)
-                                              : Colors.grey[300],
-                                          onPressed: () {
-                                            provider.switchDayButton(Days.friday);
-                                            setState(() {});
-                                          },
-                                          buttonText: 'Fri'),
-                                      ////////////
-                                      //saturday//
-                                      ////////////
-                                      const SizedBox(width: 2),
-                                      MiniSwitchButtonWidget(
-                                        buttonColor: (provider.onEvery
-                                                .contains(Days.saturday))
-                                            ? const Color.fromARGB(
-                                                255, 79, 249, 113)
-                                            : Colors.grey[300],
-                                        onPressed: () {
-                                          provider.switchDayButton(Days.saturday);
-                                          setState(() {});
-                                        },
-                                        buttonText: 'Sat',
-                                      ),
-                                      const SizedBox(width: 2),
-                                      GestureDetector(
-                                        onTap: () {
-                                          provider.enableAllDay();
-                                          setState(() {});
-                                        },
-                                        child: Container(
-                                          margin: const EdgeInsets.only(left: 2),
-                                          width: 20,
-                                          height: 20,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            color: !(provider.onEvery
-                                                    .containsAll(Days.values))
-                                                ? const Color.fromARGB(
-                                                    255, 238, 238, 238)
-                                                : const Color.fromARGB(
-                                                    255, 79, 249, 113),
-                                            border: Border.all(
-                                              width: 2,
-                                              color: const Color.fromRGBO(
-                                                  224, 224, 224, 1),
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                Container(
-                                  width: 200,
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: Colors.grey[300],
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      //memilih jam berapa tugas dikerjakan
-                                      SizedBox(
-                                        width: 50,
-                                        child: ListWheelScrollView(
-                                            controller: listHoursController,
-                                            physics:
-                                                const FixedExtentScrollPhysics(),
-                                            itemExtent: 40,
-                                            children: listHours),
-                                      ),
-                                      const Padding(
-                                        padding: EdgeInsets.only(bottom: 5),
-                                        child: Text(
-                                          ':',
-                                          style: TextStyle(
-                                            color:
-                                                Color.fromARGB(255, 23, 23, 23),
-                                            fontSize: 25,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 50,
-                                        child: ListWheelScrollView(
-                                            controller: listMinutesController,
-                                            physics:
-                                                const FixedExtentScrollPhysics(),
-                                            itemExtent: 40,
-                                            children: listMinutes),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 15),
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        const Color.fromARGB(255, 68, 68, 68),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(3),
-                                    ),
-                                  ),
-                                  onPressed: () async {
-                                    if (taskController.text.isNotEmpty) {
-                                      provider.addTask(
-                                        taskController.text,
-                                        descriptionController.text,
-                                        DateTime.parse(
-                                            '0000-00-00 ${(listHoursController.offset / 40).round().toString().length > 1 ? '${(listHoursController.offset / 40).round()}' : '0${(listHoursController.offset / 40).round()}'}:${(listMinutesController.offset / 40).round().toString().length > 1 ? '${(listMinutesController.offset / 40).round()}' : '0${(listMinutesController.offset / 40).round()}'}:00'),
-                                      );
-                                      provider.refreshTasksSettingsView();
-                                      if (context.mounted) {
-                                        Navigator.pop(context);
-                                      }
-                                    }
-                                  },
-                                  child: const Text(
-                                    'Add',
-                                    style: TextStyle(
-                                      color: Color.fromARGB(255, 238, 238, 238),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ).whenComplete(
+                showTaskForm(
+                    buttonText: 'Add',
+                    onButtonClick: () {
+                      final int listHoursStopOn =
+                          (listHoursController.offset / 40).round() % 24;
+                      final int listMinutesStopOn =
+                          (listMinutesController.offset / 40).round() % 60;
+                      provider.addTask(
+                          taskController.text,
+                          descriptionController.text,
+                          DateTime(
+                              0, 0, 0, listHoursStopOn, listMinutesStopOn));
+                      provider.refreshTasksSettingsView();
+                    }).whenComplete(
                   //menonaktifkan seluruh tombol untuk memilih hari
                   () {
                     taskController.text = '';
@@ -482,30 +566,8 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                       children: [
                         //tombol untuk mengedit pengaturan tugas harian
                         IconButton(
-                          onPressed: () {
-                            Set<Days> days = {};
-                            if (currentTask['sunday'] == true) {
-                              days.add(Days.sunday);
-                            }
-                            if (currentTask['monday'] == true) {
-                              days.add(Days.monday);
-                            }
-                            if (currentTask['tuesday'] == true) {
-                              days.add(Days.tuesday);
-                            }
-                            if (currentTask['wednesday'] == true) {
-                              days.add(Days.wednesday);
-                            }
-                            if (currentTask['thursday'] == true) {
-                              days.add(Days.thursday);
-                            }
-                            if (currentTask['friday'] == true) {
-                              days.add(Days.friday);
-                            }
-                            if (currentTask['saturday'] == true) {
-                              days.add(Days.saturday);
-                            }
-
+                          onPressed: () async {
+                            //tunggu hingga widget dibuild
                             WidgetsBinding.instance.addPostFrameCallback(
                               (timeStamp) {
                                 listHoursController.animateToItem(
@@ -516,357 +578,33 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                                     currentTask['minuteDate'],
                                     duration: const Duration(milliseconds: 500),
                                     curve: Curves.bounceInOut);
+                                taskController.text = currentTask['task'];
+                                descriptionController.text =
+                                    currentTask['description'];
                               },
                             );
-
-                            provider.onEvery = days;
-                            taskController.text = currentTask['task'];
-                            descriptionController.text =
-                                currentTask['description'];
+                            provider.restoreDayFromDB(currentTask);
                             if (context.mounted) {
-                              showModalBottomSheet(
-                                backgroundColor: Colors.transparent,
-                                isScrollControlled: true,
-                                context: context,
-                                builder: (context) {
-                                  return Padding(
-                                    padding: EdgeInsets.only(
-                                        bottom: MediaQuery.of(context)
-                                            .viewInsets
-                                            .bottom),
-                                    child: Container(
-                                      height: 350,
-                                      padding: const EdgeInsets.all(10),
-                                      decoration: const BoxDecoration(
-                                        color:
-                                            Color.fromARGB(255, 238, 238, 238),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(10),
-                                          topRight: Radius.circular(10),
-                                        ),
-                                      ),
-                                      child: Stack(
-                                        children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              TextField(
-                                                maxLength: 30,
-                                                controller: taskController,
-                                                style: const TextStyle(
-                                                    color: Color.fromARGB(
-                                                        255, 23, 23, 23)),
-                                                decoration:
-                                                    const InputDecoration(
-                                                        label: Text(
-                                                  'Task',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                )),
-                                              ),
-                                              TextField(
-                                                maxLength: 100,
-                                                controller:
-                                                    descriptionController,
-                                                style: const TextStyle(
-                                                    color: Color.fromARGB(
-                                                        255, 23, 23, 23)),
-                                                decoration:
-                                                    const InputDecoration(
-                                                        label: Text(
-                                                  'Description',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                )),
-                                              ),
-                                              //tombol untuk user agar bisa memilih hari apa saja tugas dikerjakan
-                                              StatefulBuilder(
-                                                builder: (context, setState) =>
-                                                    Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    //////////
-                                                    //sunday//
-                                                    //////////
-                                                    const SizedBox(width: 2),
-                                                    MiniSwitchButtonWidget(
-                                                      buttonColor: (provider
-                                                              .onEvery
-                                                              .contains(
-                                                                  Days.sunday))
-                                                          ? const Color
-                                                              .fromARGB(
-                                                              255, 79, 249, 113)
-                                                          : Colors.grey[300],
-                                                      onPressed: () {
-                                                        provider
-                                                            .switchDayButton(Days.sunday);
-                                                        setState(() {});
-                                                      },
-                                                      buttonText: 'Sun',
-                                                    ),
-                                                    //////////
-                                                    //monday//
-                                                    //////////
-                                                    const SizedBox(width: 2),
-                                                    MiniSwitchButtonWidget(
-                                                      buttonColor: (provider
-                                                              .onEvery
-                                                              .contains(
-                                                                  Days.monday))
-                                                          ? const Color
-                                                              .fromARGB(
-                                                              255, 79, 249, 113)
-                                                          : Colors.grey[300],
-                                                      onPressed: () {
-                                                        provider
-                                                            .switchDayButton(Days.monday);
-                                                        setState(() {});
-                                                      },
-                                                      buttonText: 'Mon',
-                                                    ),
-                                                    ///////////
-                                                    //tuesday//
-                                                    ///////////
-                                                    const SizedBox(width: 2),
-                                                    MiniSwitchButtonWidget(
-                                                        buttonColor: (provider
-                                                                .onEvery
-                                                                .contains(Days
-                                                                    .tuesday))
-                                                            ? const Color
-                                                                .fromARGB(255,
-                                                                79, 249, 113)
-                                                            : Colors.grey[300],
-                                                        onPressed: () {
-                                                          provider
-                                                              .switchDayButton(Days.tuesday);
-                                                          setState(() {});
-                                                        },
-                                                        buttonText: 'Tue'),
-                                                    /////////////
-                                                    //wednesday//
-                                                    /////////////
-                                                    const SizedBox(width: 2),
-                                                    MiniSwitchButtonWidget(
-                                                        buttonColor: (provider
-                                                                .onEvery
-                                                                .contains(Days
-                                                                    .wednesday))
-                                                            ? const Color
-                                                                .fromARGB(255,
-                                                                79, 249, 113)
-                                                            : Colors.grey[300],
-                                                        onPressed: () {
-                                                          provider
-                                                              .switchDayButton(Days.wednesday);
-                                                          setState(() {});
-                                                        },
-                                                        buttonText: 'Wed'),
-                                                    ////////////
-                                                    //thursday//
-                                                    ////////////
-                                                    const SizedBox(width: 2),
-                                                    MiniSwitchButtonWidget(
-                                                        buttonColor: (provider
-                                                                .onEvery
-                                                                .contains(Days
-                                                                    .thursday))
-                                                            ? const Color
-                                                                .fromARGB(255,
-                                                                79, 249, 113)
-                                                            : Colors.grey[300],
-                                                        onPressed: () {
-                                                          provider
-                                                              .switchDayButton(Days.thursday);
-                                                          setState(() {});
-                                                        },
-                                                        buttonText: 'Thu'),
-                                                    //////////
-                                                    //friday//
-                                                    //////////
-                                                    const SizedBox(width: 2),
-                                                    MiniSwitchButtonWidget(
-                                                        buttonColor: (provider
-                                                                .onEvery
-                                                                .contains(Days
-                                                                    .friday))
-                                                            ? const Color
-                                                                .fromARGB(255,
-                                                                79, 249, 113)
-                                                            : Colors.grey[300],
-                                                        onPressed: () {
-                                                          provider
-                                                              .switchDayButton(Days.friday);
-                                                          setState(() {});
-                                                        },
-                                                        buttonText: 'Fri'),
-                                                    ////////////
-                                                    //saturday//
-                                                    ////////////
-                                                    const SizedBox(width: 2),
-                                                    MiniSwitchButtonWidget(
-                                                      buttonColor: (provider
-                                                              .onEvery
-                                                              .contains(
-                                                                  Days
-                                                                      .saturday))
-                                                          ? const Color
-                                                              .fromARGB(
-                                                              255, 79, 249, 113)
-                                                          : Colors.grey[300],
-                                                      onPressed: () {
-                                                        provider
-                                                            .switchDayButton(Days.saturday);
-                                                        setState(() {});
-                                                      },
-                                                      buttonText: 'Sat',
-                                                    ),
-                                                    const SizedBox(width: 2),
-                                                    GestureDetector(
-                                                      onTap: () {
-                                                        provider.enableAllDay();
-                                                        setState(() {});
-                                                      },
-                                                      child: Container(
-                                                        margin: const EdgeInsets.only(left: 2),
-                                                        width: 20,
-                                                        height: 20,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(20),
-                                                          color: !(provider
-                                                                  .onEvery
-                                                                  .containsAll(Days
-                                                                      .values))
-                                                              ? const Color
-                                                                  .fromARGB(255,
-                                                                  238, 238, 238)
-                                                              : const Color
-                                                                  .fromARGB(255,
-                                                                  79, 249, 113),
-                                                          border: Border.all(
-                                                            width: 2,
-                                                            color: const Color
-                                                                .fromRGBO(224,
-                                                                224, 224, 1),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                              const SizedBox(height: 20),
-                                              Container(
-                                                width: 200,
-                                                height: 60,
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                  color: Colors.grey[300],
-                                                ),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    //memilih jam berapa tugas dikerjakan
-                                                    SizedBox(
-                                                      width: 50,
-                                                      child: ListWheelScrollView(
-                                                          controller:
-                                                              listHoursController,
-                                                          physics:
-                                                              const FixedExtentScrollPhysics(),
-                                                          itemExtent: 40,
-                                                          children: listHours),
-                                                    ),
-                                                    const Padding(
-                                                      padding: EdgeInsets.only(
-                                                          bottom: 5),
-                                                      child: Text(
-                                                        ':',
-                                                        style: TextStyle(
-                                                          color: Color.fromARGB(
-                                                              255, 23, 23, 23),
-                                                          fontSize: 25,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 50,
-                                                      child: ListWheelScrollView(
-                                                          controller:
-                                                              listMinutesController,
-                                                          physics:
-                                                              const FixedExtentScrollPhysics(),
-                                                          itemExtent: 40,
-                                                          children:
-                                                              listMinutes),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Align(
-                                            alignment: Alignment.bottomCenter,
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 15),
-                                              child: ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor:
-                                                      const Color.fromARGB(
-                                                          255, 68, 68, 68),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            3),
-                                                  ),
-                                                ),
-                                                onPressed: () async {
-                                                  if (taskController
-                                                      .text.isNotEmpty) {
-                                                    provider.editTask(
-                                                      currentTask['key'],
-                                                      taskController.text,
-                                                      descriptionController
-                                                          .text,
-                                                      DateTime.parse(
-                                                          '0000-00-00 ${(listHoursController.offset / 40).round().toString().length > 1 ? '${(listHoursController.offset / 40).round()}' : '0${(listHoursController.offset / 40).round()}'}:${(listMinutesController.offset / 40).round().toString().length > 1 ? '${(listMinutesController.offset / 40).round()}' : '0${(listMinutesController.offset / 40).round()}'}:00'),
-                                                    );
-                                                    provider
-                                                        .refreshTasksSettingsView();
-                                                    if (context.mounted) {
-                                                      Navigator.pop(context);
-                                                    }
-                                                  }
-                                                },
-                                                child: const Text(
-                                                  'Edit',
-                                                  style: TextStyle(
-                                                    color: Color.fromARGB(
-                                                        255, 238, 238, 238),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ).whenComplete(
+                              showTaskForm(
+                                  buttonText: 'Edit',
+                                  onButtonClick: () {
+                                    final int listHoursStopOn =
+                                        (listHoursController.offset / 40)
+                                                .round() %
+                                            24;
+                                    final int listMinutesStopOn =
+                                        (listMinutesController.offset / 40)
+                                                .round() %
+                                            60;
+                                    provider.editTask(
+                                      currentTask['key'],
+                                      taskController.text,
+                                      descriptionController.text,
+                                      DateTime(0, 0, 0, listHoursStopOn,
+                                          listMinutesStopOn),
+                                    );
+                                    provider.refreshTasksSettingsView();
+                                  }).whenComplete(
                                 //menonaktifkan seluruh tombol untuk memilih hari
                                 () {
                                   taskController.text = '';
@@ -879,9 +617,13 @@ class _DailyTasksSettingsViewState extends State<DailyTasksSettingsView> {
                           icon: const Icon(Icons.edit),
                         ),
                         IconButton(
-                          onPressed: () {
-                            provider.deleteTask(currentTask['key']);
-                            provider.refreshTasksSettingsView();
+                          onPressed: () async {
+                            final bool confirmation =
+                                await showDeleteTaskConfirmation() ?? false;
+                            if (confirmation == true) {
+                              provider.deleteTask(currentTask['key']);
+                              provider.refreshTasksSettingsView();
+                            }
                           },
                           icon: const Icon(Icons.delete),
                         )

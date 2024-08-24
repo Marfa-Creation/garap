@@ -315,7 +315,7 @@ class _PomodoroTimerViewState extends State<PomodoroTimerView>
                               const Duration(milliseconds: 50),
                               () => textAnimationController.forward(),
                             );
-                            provider.section = PomodoroSection.longBreak;
+                          provider.section = PomodoroSection.longBreak;
                           }
                         }
                       },
