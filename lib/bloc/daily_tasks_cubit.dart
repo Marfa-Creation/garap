@@ -216,8 +216,8 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
         tasksView: state.tasksView
           ..sort(
             (now, next) {
-              return ((now['hourDate'] * 10 + now['minuteDate']) as int) -
-                  ((next['hourDate'] * 10 + next['minuteDate']) as int);
+              return ((now['hourDate'] * 100 + now['minuteDate']) as int) -
+                  ((next['hourDate'] * 100 + next['minuteDate']) as int);
             },
           ),
       ),
@@ -268,8 +268,8 @@ class DailyTasksCubit extends Cubit<DailyTasksModel> {
         tasksSettingsView: state.tasksSettingsView
           ..sort(
             (now, next) {
-              return ((now['hourDate'] * 10 + now['minuteDate']) as int) -
-                  ((next['hourDate'] * 10 + next['minuteDate']) as int);
+              return ((now['hourDate'] * 100 + now['minuteDate']) as int) -
+                  ((next['hourDate'] * 100 + next['minuteDate']) as int);
             },
           ),
       ),
